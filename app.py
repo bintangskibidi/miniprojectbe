@@ -4,6 +4,7 @@ from pony.orm import Database, db_session
 import bcrypt
 import os
 from dotenv import load_dotenv
+import pymysql
 
 # =====================
 # LOAD ENV
@@ -17,11 +18,11 @@ db = Database()
 
 db.bind(
     provider='mysql',
-    host=os.getenv("HOST_DB"),
-    user=os.getenv("USER_DB"),
-    password=os.getenv("PASSWORD_DB"),
-    database=os.getenv("DB_NAME"),
-    port=int(os.getenv("PORT_DB"))
+    host='localhost',
+    user='root',
+    password='',
+    database='miniprojectbe',
+    port=3306
 )
 
 # =====================
@@ -58,9 +59,13 @@ seed_user()
 # FALCON SETUP
 # =====================
 from resources.auth import LoginResource
+from resources.siswa import SiswaResource, DetailSiswaResource
 
 cors = CORS(allow_all_origins=True, allow_all_headers=True, allow_all_methods=True)
 app = falcon.App(middleware=[cors.middleware])
 
 login_api = LoginResource()
 app.add_route('/auth/login', login_api)
+app.add_route('/siswa', SiswaResource())
+app.add_route('/siswa/{id:int}', DetailSiswaResource())
+
