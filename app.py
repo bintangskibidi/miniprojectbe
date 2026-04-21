@@ -1,20 +1,21 @@
 import falcon
-from falcon_cors import CORS
-from pony.orm import Database, db_session
+from falcon_cors import CORS  # Import sudah benar
+from pony.orm import db_session
+from database import db
+import json
+from datetime import date, datetime
 import bcrypt
-import os
-from dotenv import load_dotenv
-import pymysql
 
-# =====================
-# LOAD ENV
-# =====================
-load_dotenv()
+def json_serializer(obj):
+    if isinstance(obj, (date, datetime)):
+        return obj.isoformat()
+    raise TypeError ("Type %s not serializable" % type(obj))
 
-# =====================
-# INIT DATABASE (MYSQL)
-# =====================
-db = Database()
+cors = CORS(
+    allow_origins_list=['http://localhost:5173', 'http://127.0.0.1:5173'],
+    allow_all_headers=True,
+    allow_all_methods=True
+)
 
 db.bind(
     provider='mysql',
@@ -25,47 +26,18 @@ db.bind(
     port=3306
 )
 
-# =====================
-# IMPORT MODEL (SETELAH DB)
-# =====================
-from models.schema import User
-
-# =====================
-# GENERATE TABLE
-# =====================
+from models.schema import User, Siswa
 db.generate_mapping(create_tables=True)
 
-
-# =====================
-# SEED USER
-# =====================
-@db_session
-def seed_user():
-    new_email = "admin@gmail.com"
-
-    if not User.get(email=new_email):
-        password_plain = "123456"
-        hashed = bcrypt.hashpw(password_plain.encode('utf-8'), bcrypt.gensalt())
-
-        User(email=new_email, password=hashed.decode('utf-8'))
-        print(f"✅ User '{new_email}' otomatis dibuat!")
-    else:
-        print("ℹ️ User sudah ada.")
-
-
-seed_user()
-
-# =====================
-# FALCON SETUP
-# =====================
 from resources.auth import LoginResource
 from resources.siswa import SiswaResource, DetailSiswaResource
 
-cors = CORS(allow_all_origins=True, allow_all_headers=True, allow_all_methods=True)
-app = falcon.App(middleware=[cors.middleware])
+# Masukkan middleware CORS ke sini!
+app = falcon.App(middleware=[cors.middleware]) 
+app.resp_options.media_handlers[falcon.MEDIA_JSON] = falcon.media.JSONHandler(
+    dumps=lambda obj: json.dumps(obj, default=json_serializer)
+)
 
-login_api = LoginResource()
-app.add_route('/auth/login', login_api)
+app.add_route('/auth/login', LoginResource())
 app.add_route('/siswa', SiswaResource())
 app.add_route('/siswa/{id:int}', DetailSiswaResource())
-
