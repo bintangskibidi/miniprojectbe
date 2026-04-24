@@ -31,9 +31,13 @@ db.generate_mapping(create_tables=True)
 
 from resources.auth import LoginResource
 from resources.siswa import SiswaResource, DetailSiswaResource
+from resources.kelas import KelasResource
+from resources.jurusan import JurusanResource
 
 # Masukkan middleware CORS ke sini!
 app = falcon.App(middleware=[cors.middleware]) 
+kelas_api = KelasResource()
+jurusan_api = JurusanResource()
 app.resp_options.media_handlers[falcon.MEDIA_JSON] = falcon.media.JSONHandler(
     dumps=lambda obj: json.dumps(obj, default=json_serializer)
 )
@@ -41,3 +45,7 @@ app.resp_options.media_handlers[falcon.MEDIA_JSON] = falcon.media.JSONHandler(
 app.add_route('/auth/login', LoginResource())
 app.add_route('/siswa', SiswaResource())
 app.add_route('/siswa/{id:int}', DetailSiswaResource())
+app.add_route('/kelas', kelas_api)
+app.add_route('/kelas/{id}', kelas_api)
+app.add_route('/jurusan', jurusan_api)
+app.add_route('/jurusan/{id}', jurusan_api)

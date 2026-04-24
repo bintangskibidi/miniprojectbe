@@ -9,6 +9,18 @@ class User(db.Entity):
     password = Required(str)
 
 
+class Kelas(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    kode_kelas = Required(str, unique=True) 
+    nama_kelas = Required(str)
+
+
+class Jurusan(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    kode_jurusan = Required(str, unique=True) 
+    nama_jurusan = Required(str)    
+
+
 class Siswa(db.Entity):
     id = PrimaryKey(int, auto=True)
 
