@@ -2,29 +2,32 @@ from pony.orm import PrimaryKey, Required, Optional, LongStr
 from datetime import date
 from database import db
 
-
 class User(db.Entity):
     id = PrimaryKey(int, auto=True)
     email = Required(str, unique=True)
     password = Required(str)
 
-
 class Kelas(db.Entity):
     id = PrimaryKey(int, auto=True)
-    kode_kelas = Required(str, unique=True) 
+    kode_kelas = Required(str, unique=True)
     nama_kelas = Required(str)
-
 
 class Jurusan(db.Entity):
     id = PrimaryKey(int, auto=True)
-    kode_jurusan = Required(str, unique=True) 
-    nama_jurusan = Required(str)    
+    kode_jurusan = Required(str, unique=True)
+    nama_jurusan = Required(str)
 
+# PINDAHKAN KE LUAR (Sejajar dengan class lainnya)
+class WaliKelas(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    # Field ini harus ada agar sinkron dengan FE
+    nama_pegawai = Required(str)
+    nama_kelas = Required(str)
+    tahun_ajaran = Optional(str)
 
 class Siswa(db.Entity):
     id = PrimaryKey(int, auto=True)
-
-    nis = Required(str)
+    nis = Required(str, unique=True)
     nisn = Optional(str)
     nama = Required(str)
     tempat_lahir = Optional(str)
@@ -33,7 +36,6 @@ class Siswa(db.Entity):
     alamat = Optional(LongStr)
     agama = Optional(str)
     golongan_darah = Optional(str)
-
     status = Optional(str)
     tahun_ajaran = Optional(str)
     tahun_masuk = Optional(str)
@@ -41,16 +43,12 @@ class Siswa(db.Entity):
     jurusan = Optional(str)
     hp = Optional(str)
     sekolah_asal = Optional(str)
-
     ayah = Optional(str)
     ibu = Optional(str)
     wali = Optional(str)
-
     pekerjaan_ayah = Optional(str)
     pekerjaan_ibu = Optional(str)
-
     hp_ayah = Optional(str)
     hp_ibu = Optional(str)
     hp_wali = Optional(str)
-
     hubungan_wali = Optional(str)
