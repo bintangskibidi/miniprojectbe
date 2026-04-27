@@ -12,7 +12,7 @@ def json_serializer(obj):
     raise TypeError ("Type %s not serializable" % type(obj))
 
 cors = CORS(
-    allow_origins_list=['http://localhost:5173', 'http://127.0.0.1:5173'],
+    allow_all_origins=True, 
     allow_all_headers=True,
     allow_all_methods=True
 )
