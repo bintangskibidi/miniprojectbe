@@ -103,3 +103,6 @@ app.add_route('/tahun-ajaran/{id:int}', tahunajaran_api)
 # Aspek Penilaian
 app.add_route('/aspek-penilaian', aspekpenilaian_api)
 app.add_route('/aspek-penilaian/{id:int}', aspekpenilaian_api)
+app.add_route('/jurusan/{id}', jurusan_api)
+app.add_route('/walikelas', walikelas_api)
+app.add_route('/walikelas/{id:int}', walikelas_detail_api)
