@@ -2,6 +2,29 @@ from pony.orm import PrimaryKey, Required, Optional, LongStr
 from datetime import date
 from database import db
 
+
+
+
+class AspekPenilaian(db.Entity):
+    _table_ = "aspek_penilaian"
+
+    id = PrimaryKey(int, auto=True)
+    kode_aspek = Required(str, unique=True, max_len=20)
+    nama_aspek = Required(str, max_len=100)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "kode_aspek": self.kode_aspek,
+            "nama_aspek": self.nama_aspek
+        }
+
+class TahunAjaran(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    tahun_ajaran = Required(str, unique=True)
+    tahun = Required(str)
+    status = Required(bool, default=True)
+
 class User(db.Entity):
     id = PrimaryKey(int, auto=True)
     email = Required(str, unique=True)
