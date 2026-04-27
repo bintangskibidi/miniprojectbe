@@ -33,11 +33,14 @@ from resources.auth import LoginResource
 from resources.siswa import SiswaResource, DetailSiswaResource
 from resources.kelas import KelasResource
 from resources.jurusan import JurusanResource
+from resources.walikelas import WaliKelasResource, DetailwalikelasResource
 
 # Masukkan middleware CORS ke sini!
 app = falcon.App(middleware=[cors.middleware]) 
 kelas_api = KelasResource()
 jurusan_api = JurusanResource()
+walikelas_api = WaliKelasResource()
+walikelas_detail_api = DetailwalikelasResource()
 app.resp_options.media_handlers[falcon.MEDIA_JSON] = falcon.media.JSONHandler(
     dumps=lambda obj: json.dumps(obj, default=json_serializer)
 )
@@ -49,3 +52,5 @@ app.add_route('/kelas', kelas_api)
 app.add_route('/kelas/{id}', kelas_api)
 app.add_route('/jurusan', jurusan_api)
 app.add_route('/jurusan/{id}', jurusan_api)
+app.add_route('/walikelas', walikelas_api)
+app.add_route('/walikelas/{id:int}', walikelas_detail_api)
