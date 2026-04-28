@@ -4,6 +4,20 @@ from database import db
 
 
 
+class JenisSemester(db.Entity):
+    _table_ = "jenis_semester"
+
+    id = PrimaryKey(int, auto=True)
+    nama = Required(str, 100)
+    status = Required(bool, default=True)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nama": self.nama,
+            "status": self.status
+        }
+
 
 class AspekPenilaian(db.Entity):
     _table_ = "aspek_penilaian"

@@ -43,7 +43,8 @@ from models.schema import (
     Jurusan,
     Kelas,
     TahunAjaran,
-    AspekPenilaian
+    AspekPenilaian,
+    JenisSemester
 )
 
 db.generate_mapping(create_tables=True)
@@ -59,6 +60,7 @@ from resources.jurusan import JurusanResource
 from resources.tahunajaran import TahunAjaranResource
 from resources.aspekpenilaian import AspekPenilaianResource
 from resources.walikelas import WaliKelasResource, DetailwalikelasResource
+from resources.jenissemester import JenisSemesterResource
 
 
 # =========================
@@ -80,6 +82,7 @@ tahunajaran_api = TahunAjaranResource()
 aspekpenilaian_api = AspekPenilaianResource()
 walikelas_api = WaliKelasResource ()
 walikelas_detail_api = DetailwalikelasResource ()
+jenissemester_api = JenisSemesterResource()
 
 
 # =========================
@@ -106,5 +109,9 @@ app.add_route('/tahun-ajaran/{id:int}', tahunajaran_api)
 # Aspek Penilaian
 app.add_route('/aspek-penilaian', aspekpenilaian_api)
 app.add_route('/aspek-penilaian/{id:int}', aspekpenilaian_api)
+
 app.add_route('/walikelas', walikelas_api)
 app.add_route('/walikelas/{id:int}', walikelas_detail_api)
+
+app.add_route('/jenis-semester', jenissemester_api)
+app.add_route('/jenis-semester/{id:int}', jenissemester_api)
