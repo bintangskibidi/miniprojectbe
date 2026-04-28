@@ -58,6 +58,7 @@ from resources.kelas import KelasResource
 from resources.jurusan import JurusanResource
 from resources.tahunajaran import TahunAjaranResource
 from resources.aspekpenilaian import AspekPenilaianResource
+from resources.walikelas import WaliKelasResource, DetailwalikelasResource
 
 
 # =========================
@@ -77,6 +78,8 @@ kelas_api = KelasResource()
 jurusan_api = JurusanResource()
 tahunajaran_api = TahunAjaranResource()
 aspekpenilaian_api = AspekPenilaianResource()
+walikelas_api = WaliKelasResource ()
+walikelas_detail_api = DetailwalikelasResource ()
 
 
 # =========================
@@ -103,6 +106,5 @@ app.add_route('/tahun-ajaran/{id:int}', tahunajaran_api)
 # Aspek Penilaian
 app.add_route('/aspek-penilaian', aspekpenilaian_api)
 app.add_route('/aspek-penilaian/{id:int}', aspekpenilaian_api)
-app.add_route('/jurusan/{id}', jurusan_api)
 app.add_route('/walikelas', walikelas_api)
 app.add_route('/walikelas/{id:int}', walikelas_detail_api)

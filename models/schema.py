@@ -40,10 +40,8 @@ class Jurusan(db.Entity):
     kode_jurusan = Required(str, unique=True)
     nama_jurusan = Required(str)
 
-# PINDAHKAN KE LUAR (Sejajar dengan class lainnya)
 class WaliKelas(db.Entity):
     id = PrimaryKey(int, auto=True)
-    # Field ini harus ada agar sinkron dengan FE
     nama_pegawai = Required(str)
     nama_kelas = Required(str)
     tahun_ajaran = Optional(str)
