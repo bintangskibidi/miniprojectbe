@@ -65,7 +65,8 @@ from models.schema import (
     Kelas,
     TahunAjaran,
     AspekPenilaian,
-    JenisSemester
+    JenisSemester,
+    Semester
 )
 
 db.generate_mapping(create_tables=True)
@@ -82,6 +83,8 @@ from resources.tahunajaran import TahunAjaranResource
 from resources.aspekpenilaian import AspekPenilaianResource
 from resources.walikelas import WaliKelasResource, DetailwalikelasResource
 from resources.jenissemester import JenisSemesterResource
+from resources.semester import SemesterResource
+
 from resources.ekstra import EkstraKulikulerResource, DetailekstrakurikulerResource
 
 
@@ -100,12 +103,13 @@ app.resp_options.media_handlers[falcon.MEDIA_JSON] = falcon.media.JSONHandler(
 # =========================
 kelas_api = KelasResource()
 jurusan_api = JurusanResource()
-ekstrakurikuler_api = EkstraKulikulerResource()
-tahunajaran_api = TahunAjaranResource()
+tahun_ajaran_api = TahunAjaranResource()
 aspekpenilaian_api = AspekPenilaianResource()
-walikelas_api = WaliKelasResource()
-walikelas_detail_api = DetailwalikelasResource()
-jenissemester_api = JenisSemesterResource()
+walikelas_api = WaliKelasResource ()
+walikelas_detail_api = DetailwalikelasResource ()
+jenis_semester_api = JenisSemesterResource()
+semester_api = SemesterResource()
+ekstrakurikuler_api = EkstraKulikulerResource()
 
 
 # =========================
@@ -122,11 +126,12 @@ app.add_route('/kelas/{id:int}', kelas_api)
 app.add_route('/jurusan', jurusan_api)
 app.add_route('/jurusan/{id:int}', jurusan_api)
 
+app.add_route('/tahun-ajaran', tahun_ajaran_api)
+app.add_route('/tahun-ajaran/{id:int}', tahun_ajaran_api)
+
 app.add_route('/ekstra', EkstraKulikulerResource())
 app.add_route('/ekstra/{id:int}', DetailekstrakurikulerResource())
 
-app.add_route('/tahun-ajaran', tahunajaran_api)
-app.add_route('/tahun-ajaran/{id:int}', tahunajaran_api)
 
 app.add_route('/aspek-penilaian', aspekpenilaian_api)
 app.add_route('/aspek-penilaian/{id:int}', aspekpenilaian_api)
@@ -134,5 +139,8 @@ app.add_route('/aspek-penilaian/{id:int}', aspekpenilaian_api)
 app.add_route('/walikelas', walikelas_api)
 app.add_route('/walikelas/{id:int}', walikelas_detail_api)
 
-app.add_route('/jenis-semester', jenissemester_api)
-app.add_route('/jenis-semester/{id:int}', jenissemester_api)
+app.add_route('/jenis-semester', jenis_semester_api)
+app.add_route('/jenis-semester/{id:int}', jenis_semester_api)
+
+app.add_route('/semester', semester_api)
+app.add_route('/semester/{id:int}', semester_api)
