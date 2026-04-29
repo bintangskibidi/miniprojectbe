@@ -2,10 +2,17 @@ from datetime import date
 from pony.orm import LongStr, Optional, PrimaryKey, Required, Set
 from database import db
 
+class EkstraKulikuler(db.Entity):
+    _table_ = "ekstrakurikuler"
+    id = PrimaryKey(int, auto=True)
+    nama_kelas = Required(str)    # Ini untuk 'nama' ekskul
+    nama_pegawai = Required(str)  # Ini untuk 'pembina'
+    jadwal = Optional(str)        # Tambahan baru
+    tanggal = Optional(str)
+    keterangan = Optional(str)
 
 class JenisSemester(db.Entity):
     _table_ = "jenis_semester"
-
     id = PrimaryKey(int, auto=True)
     nama = Required(str, 100)
     status = Required(bool, default=True)
@@ -19,10 +26,8 @@ class JenisSemester(db.Entity):
             "status": self.status,
         }
 
-
 class AspekPenilaian(db.Entity):
     _table_ = "aspek_penilaian"
-
     id = PrimaryKey(int, auto=True)
     kode_aspek = Required(str, unique=True, max_len=20)
     nama_aspek = Required(str, max_len=100)
@@ -105,6 +110,7 @@ class Siswa(db.Entity):
     nis = Required(str, unique=True)
     nisn = Optional(str)
     nama = Required(str)
+    # ... atribut lainnya tetap sama ...
     tempat_lahir = Optional(str)
     tanggal_lahir = Optional(date)
     jenis_kelamin = Optional(str)
