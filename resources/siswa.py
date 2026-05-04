@@ -1,4 +1,5 @@
 import falcon
+import traceback
 from pony.orm import db_session, select
 from models.schema import Siswa, Kelas, Jurusan, TahunAjaran
 from datetime import datetime
@@ -146,48 +147,74 @@ class DetailSiswaResource:
             }
             return
 
-        tgl_final = None
-        if data.get("tanggal_lahir"):
-            try:
-                tgl_final = datetime.strptime(
-                    data["tanggal_lahir"],
-                    "%Y-%m-%d"
-                ).date()
-            except:
+        try:
+            # For kenaikan kelas: only update kelas and tahun_ajaran if provided
+            update_fields = {}
+            
+            if "kelas" in data:
+                update_fields["kelas"] = data["kelas"]
+            if "tahun_ajaran" in data:
+                update_fields["tahun_ajaran"] = data["tahun_ajaran"]
+            
+            # Full update if other fields provided (existing behavior)
+            if len(update_fields) == 0 or len(data) > 2:
                 tgl_final = None
+                if data.get("tanggal_lahir"):
+                    try:
+                        tgl_final = datetime.strptime(
+                            data["tanggal_lahir"],
+                            "%Y-%m-%d"
+                        ).date()
+                    except:
+                        tgl_final = None
 
-        siswa.set(
-            nis=data.get("nis") or "",
-            nisn=data.get("nisn") or "",
-            nama=data.get("nama") or "",
-            tempat_lahir=data.get("tempat_lahir") or "",
-            tanggal_lahir=tgl_final,
-            jenis_kelamin=data.get("jenis_kelamin") or "",
-            alamat=data.get("alamat") or "",
-            agama=data.get("agama") or "",
-            golongan_darah=data.get("golongan_darah") or "",
-            status=data.get("status") or "Aktif",
-            tahun_ajaran=data.get("tahun_ajaran") or "",
-            tahun_masuk=data.get("tahun_masuk") or "",
-            kelas=data.get("kelas") or "",
-            jurusan=data.get("jurusan") or "",
-            hp=data.get("hp") or "",
-            sekolah_asal=data.get("sekolah_asal") or "",
-            ayah=data.get("ayah") or "",
-            ibu=data.get("ibu") or "",
-            wali=data.get("wali") or "",
-            pekerjaan_ayah=data.get("pekerjaan_ayah") or "",
-            pekerjaan_ibu=data.get("pekerjaan_ibu") or "",
-            hp_ayah=data.get("hp_ayah") or "",
-            hp_ibu=data.get("hp_ibu") or "",
-            hp_wali=data.get("hp_wali") or "",
-            hubungan_wali=data.get("hubungan_wali") or ""
-        )
+                update_fields.update({
+                    "nis": data.get("nis") or "",
+                    "nisn": data.get("nisn") or "",
+                    "nama": data.get("nama") or "",
+                    "tempat_lahir": data.get("tempat_lahir") or "",
+                    "tanggal_lahir": tgl_final,
+                    "jenis_kelamin": data.get("jenis_kelamin") or "",
+                    "alamat": data.get("alamat") or "",
+                    "agama": data.get("agama") or "",
+                    "golongan_darah": data.get("golongan_darah") or "",
+                    "status": data.get("status") or "Aktif",
+                    "tahun_ajaran": data.get("tahun_ajaran") or "",
+                    "tahun_masuk": data.get("tahun_masuk") or "",
+                    "kelas": data.get("kelas") or "",
+                    "jurusan": data.get("jurusan") or "",
+                    "hp": data.get("hp") or "",
+                    "sekolah_asal": data.get("sekolah_asal") or "",
+                    "ayah": data.get("ayah") or "",
+                    "ibu": data.get("ibu") or "",
+                    "wali": data.get("wali") or "",
+                    "pekerjaan_ayah": data.get("pekerjaan_ayah") or "",
+                    "pekerjaan_ibu": data.get("pekerjaan_ibu") or "",
+                    "hp_ayah": data.get("hp_ayah") or "",
+                    "hp_ibu": data.get("hp_ibu") or "",
+                    "hp_wali": data.get("hp_wali") or "",
+                    "hubungan_wali": data.get("hubungan_wali") or ""
+                })
 
-        resp.media = {
-            "status": True,
-            "message": "Data berhasil diupdate"
-        }
+            # Apply only non-empty updates to avoid issues
+            safe_updates = {k: v for k, v in update_fields.items() if v is not None and v != ""}
+            siswa.set(**safe_updates)
+
+            resp.media = {
+                "status": True,
+                "message": "Data berhasil diupdate"
+            }
+
+        except Exception as e:
+            print(f"ERROR updating siswa {id}: {str(e)}")
+            print(f"Data received: {data}")
+            print(f"Traceback: {traceback.format_exc()}")
+            
+            resp.status = falcon.HTTP_400
+            resp.media = {
+                "status": False,
+                "message": f"Gagal update data: {str(e)}"
+            }
 
     @db_session
     def on_delete(self, req, resp, id):
@@ -202,3 +229,4 @@ class DetailSiswaResource:
             "status": True,
             "message": "Data siswa berhasil dihapus"
         }
+
