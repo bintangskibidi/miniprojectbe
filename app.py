@@ -74,6 +74,7 @@ from resources.tahunajaran import TahunAjaranResource
 from resources.aspekpenilaian import AspekPenilaianResource
 from resources.walikelas import WaliKelasResource, DetailwalikelasResource
 from resources.jenissemester import JenisSemesterResource
+from resources.mapel import MapelResource
 from resources.semester import SemesterResource
 from resources.ekstra import EkstraKulikulerResource, DetailekstrakurikulerResource
 
@@ -100,6 +101,7 @@ aspekpenilaian_api = AspekPenilaianResource()
 walikelas_api = WaliKelasResource()
 walikelas_detail_api = DetailwalikelasResource()
 jenis_semester_api = JenisSemesterResource()
+mapel_api = MapelResource()
 semester_api = SemesterResource()
 ekstrakurikuler_api = EkstraKulikulerResource()
 ekstrakurikuler_detail_api = DetailekstrakurikulerResource()
@@ -134,6 +136,9 @@ app.add_route('/walikelas/{id:int}', walikelas_detail_api)
 
 app.add_route('/jenis-semester', jenis_semester_api)
 app.add_route('/jenis-semester/{id:int}', jenis_semester_api)
+
+app.add_route('/mapel', mapel_api)
+app.add_route('/mapel/{id:int}', mapel_api)
 
 app.add_route('/semester', semester_api)
 app.add_route('/semester/{id:int}', semester_api)
