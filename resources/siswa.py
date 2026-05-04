@@ -130,33 +130,32 @@ class DetailSiswaResource:
                 tgl_final = None
 
         siswa.set(
-            nis=data.get('nis') or "",
-            nisn=data.get('nisn') or "",
-            nama=data.get('nama') or "",
-            tempat_lahir=data.get('tempat_lahir') or "",
-            tanggal_lahir=tgl_final, 
-            jenis_kelamin=data.get('jenis_kelamin') or "",
-            alamat=data.get('alamat') or "", 
-            agama=data.get('agama') or "",
-            golongan_darah=data.get('golongan_darah') or "",
-            status=data.get('status') or "Aktif",
-            tahun_ajaran=data.get('tahun_ajaran') or "",
-            tahun_masuk=data.get('tahun_masuk') or "",
-            kelas=data.get('kelas') or "",
-            jurusan=data.get('jurusan') or "",
-            hp=data.get('hp') or "",
-            sekolah_asal=data.get('sekolah_asal') or "",
-            ayah=data.get('ayah') or "",
-            ibu=data.get('ibu') or "",
-            wali=data.get('wali') or "",
-            pekerjaan_ayah=data.get('pekerjaan_ayah') or "",
-            pekerjaan_ibu=data.get('pekerjaan_ibu') or "",
-            hp_ayah=data.get('hp_ayah') or "",
-            hp_ibu=data.get('hp_ibu') or "",
-            hp_wali=data.get('hp_wali') or "",
-            hubungan_wali=data.get('hubungan_wali') or ""
+            nis=data.get('nis', siswa.nis),
+            nisn=data.get('nisn', siswa.nisn),
+            nama=data.get('nama', siswa.nama),
+            tempat_lahir=data.get('tempat_lahir', siswa.tempat_lahir),
+            tanggal_lahir=tgl_final if tgl_input else siswa.tanggal_lahir,
+            jenis_kelamin=data.get('jenis_kelamin', siswa.jenis_kelamin),
+            alamat=data.get('alamat', siswa.alamat),
+            agama=data.get('agama', siswa.agama),
+            golongan_darah=data.get('golongan_darah', siswa.golongan_darah),
+            status=data.get('status', siswa.status),
+            tahun_ajaran=data.get('tahun_ajaran', siswa.tahun_ajaran),
+            tahun_masuk=data.get('tahun_masuk', siswa.tahun_masuk),
+            kelas=data.get('kelas', siswa.kelas),
+            jurusan=data.get('jurusan', siswa.jurusan),
+            hp=data.get('hp', siswa.hp),
+            sekolah_asal=data.get('sekolah_asal', siswa.sekolah_asal),
+            ayah=data.get('ayah', siswa.ayah),
+            ibu=data.get('ibu', siswa.ibu),
+            wali=data.get('wali', siswa.wali),
+            pekerjaan_ayah=data.get('pekerjaan_ayah', siswa.pekerjaan_ayah),
+            pekerjaan_ibu=data.get('pekerjaan_ibu', siswa.pekerjaan_ibu),
+            hp_ayah=data.get('hp_ayah', siswa.hp_ayah),
+            hp_ibu=data.get('hp_ibu', siswa.hp_ibu),
+            hp_wali=data.get('hp_wali', siswa.hp_wali),
+            hubungan_wali=data.get('hubungan_wali', siswa.hubungan_wali)
         )
-        
         resp.media = {"status": True, "message": "Data berhasil diupdate"}
 
     @db_session
