@@ -15,32 +15,18 @@ def json_serializer(obj):
 
 
 # =========================
-# CORS MIDDLEWARE (FIX UTAMA)
+# CORS MIDDLEWARE
 # =========================
-class SimpleCORS:
-    def process_request(self, req, resp):
-        resp.set_header("Access-Control-Allow-Origin", "*")
-        resp.set_header("Access-Control-Allow-Headers", "*")
-        resp.set_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-
-        # HANDLE PREFLIGHT REQUEST
-        if req.method == "OPTIONS":
-            resp.status = falcon.HTTP_200
-            resp.complete = True
-            return
-
-
 class SimpleCORS:
     def process_request(self, req, resp):
         resp.set_header("Access-Control-Allow-Origin", "*")
         resp.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
         resp.set_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 
-    def process_response(self, req, resp, resource, req_succeeded):
-        # Penting untuk menangani request OPTIONS dari browser
         if req.method == "OPTIONS":
             resp.status = falcon.HTTP_200
             resp.complete = True
+
 
 # =========================
 # DATABASE CONFIG
@@ -69,6 +55,7 @@ from models.schema import (
     Semester
 )
 
+
 db.generate_mapping(create_tables=True)
 
 
@@ -76,7 +63,11 @@ db.generate_mapping(create_tables=True)
 # IMPORT RESOURCES
 # =========================
 from resources.auth import LoginResource
-from resources.siswa import SiswaResource, DetailSiswaResource
+from resources.siswa import (
+    SiswaResource,
+    SiswaDropdownResource,
+    DetailSiswaResource
+)
 from resources.kelas import KelasResource
 from resources.jurusan import JurusanResource
 from resources.tahunajaran import TahunAjaranResource
@@ -84,12 +75,11 @@ from resources.aspekpenilaian import AspekPenilaianResource
 from resources.walikelas import WaliKelasResource, DetailwalikelasResource
 from resources.jenissemester import JenisSemesterResource
 from resources.semester import SemesterResource
-
 from resources.ekstra import EkstraKulikulerResource, DetailekstrakurikulerResource
 
 
 # =========================
-# APP INIT (FIX DI SINI)
+# APP INIT
 # =========================
 app = falcon.App(middleware=[SimpleCORS()])
 
@@ -101,23 +91,27 @@ app.resp_options.media_handlers[falcon.MEDIA_JSON] = falcon.media.JSONHandler(
 # =========================
 # RESOURCE INSTANCES
 # =========================
+siswa_api = SiswaResource()
+siswa_dropdown_api = SiswaDropdownResource()
 kelas_api = KelasResource()
 jurusan_api = JurusanResource()
 tahun_ajaran_api = TahunAjaranResource()
 aspekpenilaian_api = AspekPenilaianResource()
-walikelas_api = WaliKelasResource ()
-walikelas_detail_api = DetailwalikelasResource ()
+walikelas_api = WaliKelasResource()
+walikelas_detail_api = DetailwalikelasResource()
 jenis_semester_api = JenisSemesterResource()
 semester_api = SemesterResource()
 ekstrakurikuler_api = EkstraKulikulerResource()
+ekstrakurikuler_detail_api = DetailekstrakurikulerResource()
 
 
 # =========================
-# ROUTES (INI SUDAH BENAR)
+# ROUTES
 # =========================
 app.add_route('/auth/login', LoginResource())
 
-app.add_route('/siswa', SiswaResource())
+app.add_route('/siswa', siswa_api)
+app.add_route('/siswa/dropdown', siswa_dropdown_api)
 app.add_route('/siswa/{id:int}', DetailSiswaResource())
 
 app.add_route('/kelas', kelas_api)
@@ -129,9 +123,8 @@ app.add_route('/jurusan/{id:int}', jurusan_api)
 app.add_route('/tahun-ajaran', tahun_ajaran_api)
 app.add_route('/tahun-ajaran/{id:int}', tahun_ajaran_api)
 
-app.add_route('/ekstra', EkstraKulikulerResource())
-app.add_route('/ekstra/{id:int}', DetailekstrakurikulerResource())
-
+app.add_route('/ekstra', ekstrakurikuler_api)
+app.add_route('/ekstra/{id:int}', ekstrakurikuler_detail_api)
 
 app.add_route('/aspek-penilaian', aspekpenilaian_api)
 app.add_route('/aspek-penilaian/{id:int}', aspekpenilaian_api)
