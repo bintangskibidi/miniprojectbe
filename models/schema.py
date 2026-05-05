@@ -2,14 +2,16 @@ from datetime import date
 from pony.orm import LongStr, Optional, PrimaryKey, Required, Set
 from database import db
 
+
 class EkstraKulikuler(db.Entity):
     _table_ = "ekstrakurikuler"
     id = PrimaryKey(int, auto=True)
-    nama_kelas = Required(str)    # Ini untuk 'nama' ekskul
-    nama_pegawai = Required(str)  # Ini untuk 'pembina'
-    jadwal = Optional(str)        # Tambahan baru
+    nama_kelas = Required(str)
+    nama_pegawai = Required(str)
+    jadwal = Optional(str)
     tanggal = Optional(str)
     keterangan = Optional(str)
+
 
 class JenisSemester(db.Entity):
     _table_ = "jenis_semester"
@@ -19,12 +21,6 @@ class JenisSemester(db.Entity):
 
     semesters = Set("Semester")
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "nama": self.nama,
-            "status": self.status,
-        }
 
 class AspekPenilaian(db.Entity):
     _table_ = "aspek_penilaian"
@@ -32,17 +28,12 @@ class AspekPenilaian(db.Entity):
     kode_aspek = Required(str, unique=True, max_len=20)
     nama_aspek = Required(str, max_len=100)
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "kode_aspek": self.kode_aspek,
-            "nama_aspek": self.nama_aspek,
-        }
+    # 🔥 TAMBAH INI
+    raports = Set("Raport")
 
 
 class TahunAjaran(db.Entity):
     _table_ = "tahun_ajaran"
-
     id = PrimaryKey(int, auto=True)
     tahun_ajaran = Required(str, unique=True)
     tahun = Required(str)
@@ -50,34 +41,20 @@ class TahunAjaran(db.Entity):
 
     semesters = Set("Semester")
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "tahun_ajaran": self.tahun_ajaran,
-            "tahun": self.tahun,
-            "status": self.status,
-        }
+    # optional (aman kalau ada)
+    raports = Set("Raport")
 
 
 class Semester(db.Entity):
     _table_ = "semester"
-
     id = PrimaryKey(int, auto=True)
     tahun_ajaran = Required(TahunAjaran)
     jenis_semester = Required(JenisSemester)
     nama_semester = Required(str, 100)
     status = Required(bool, default=True)
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "tahun_ajaran_id": self.tahun_ajaran.id,
-            "tahun_ajaran": self.tahun_ajaran.tahun_ajaran,
-            "jenis_semester_id": self.jenis_semester.id,
-            "jenis_semester": self.jenis_semester.nama,
-            "nama_semester": self.nama_semester,
-            "status": self.status,
-        }
+    # 🔥 TAMBAH INI
+    raports = Set("Raport")
 
 
 class User(db.Entity):
@@ -85,11 +62,17 @@ class User(db.Entity):
     email = Required(str, unique=True)
     password = Required(str)
 
+    # optional
+    raports = Set("Raport")
+
 
 class Kelas(db.Entity):
     id = PrimaryKey(int, auto=True)
     kode_kelas = Required(str, unique=True)
     nama_kelas = Required(str)
+
+    # 🔥 TAMBAH INI
+    raports = Set("Raport")
 
 
 class Jurusan(db.Entity):
@@ -110,7 +93,6 @@ class Siswa(db.Entity):
     nis = Required(str, unique=True)
     nisn = Optional(str)
     nama = Required(str)
-    # ... atribut lainnya tetap sama ...
     tempat_lahir = Optional(str)
     tanggal_lahir = Optional(date)
     jenis_kelamin = Optional(str)
@@ -133,3 +115,25 @@ class Siswa(db.Entity):
     hp_ibu = Optional(str)
     hp_wali = Optional(str)
     hubungan_wali = Optional(str)
+
+    # 🔥 WAJIB
+    raports = Set("Raport")
+
+
+class Raport(db.Entity):
+    _table_ = "raport"
+
+    id = PrimaryKey(int, auto=True)
+
+    siswa = Required(Siswa)
+    kelas = Required(Kelas)
+    semester = Required(Semester)
+    mapel = Required(AspekPenilaian)
+
+    tahun_ajaran = Optional(TahunAjaran)
+    wali = Optional(User)
+
+    kkm = Optional(int)
+    harian = Optional(int)
+    ujian = Optional(int)
+    deskripsi = Optional(str)

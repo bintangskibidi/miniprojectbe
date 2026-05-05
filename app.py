@@ -52,7 +52,8 @@ from models.schema import (
     TahunAjaran,
     AspekPenilaian,
     JenisSemester,
-    Semester
+    Semester,
+    Raport
 )
 
 
@@ -76,6 +77,7 @@ from resources.walikelas import WaliKelasResource, DetailwalikelasResource
 from resources.jenissemester import JenisSemesterResource
 from resources.semester import SemesterResource
 from resources.ekstra import EkstraKulikulerResource, DetailekstrakurikulerResource
+from resources.raport import RaportResource
 
 
 # =========================
@@ -103,6 +105,7 @@ jenis_semester_api = JenisSemesterResource()
 semester_api = SemesterResource()
 ekstrakurikuler_api = EkstraKulikulerResource()
 ekstrakurikuler_detail_api = DetailekstrakurikulerResource()
+raport_api = RaportResource()
 
 
 # =========================
@@ -137,3 +140,6 @@ app.add_route('/jenis-semester/{id:int}', jenis_semester_api)
 
 app.add_route('/semester', semester_api)
 app.add_route('/semester/{id:int}', semester_api)
+
+app.add_route('/raport', raport_api)
+app.add_route('/raport/{id:int}', raport_api)

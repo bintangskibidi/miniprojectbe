@@ -17,8 +17,8 @@ class SiswaResource:
             keyword = search.lower()
             query = query.filter(
                 lambda s:
-                    keyword in s.nama.lower() or
-                    keyword in s.nis.lower()
+                    keyword in (s.nama or "").lower() or
+                    keyword in (s.nis or "").lower()
             )
 
         if kelas:
@@ -31,10 +31,28 @@ class SiswaResource:
                 "nis": s.nis,
                 "nisn": s.nisn,
                 "nama": s.nama,
+                "tempat_lahir": s.tempat_lahir,
+                "tanggal_lahir": s.tanggal_lahir.isoformat() if s.tanggal_lahir else None,
+                "jenis_kelamin": s.jenis_kelamin,
+                "agama": s.agama,
+                "golongan_darah": s.golongan_darah,
+                "alamat": s.alamat,
+                "status": s.status,
                 "kelas": s.kelas,
                 "jurusan": s.jurusan,
-                "status": s.status,
-                "alamat": s.alamat
+                "tahun_ajaran": s.tahun_ajaran,
+                "tahun_masuk": s.tahun_masuk,
+                "hp": s.hp,
+                "sekolah_asal": s.sekolah_asal,
+                "ayah": s.ayah,
+                "ibu": s.ibu,
+                "wali": s.wali,
+                "pekerjaan_ayah": s.pekerjaan_ayah,
+                "pekerjaan_ibu": s.pekerjaan_ibu,
+                "hp_ayah": s.hp_ayah,
+                "hp_ibu": s.hp_ibu,
+                "hp_wali": s.hp_wali,
+                "hubungan_wali": s.hubungan_wali
             })
 
         resp.media = {
@@ -48,10 +66,7 @@ class SiswaResource:
 
         tanggal = None
         if body.get("tanggal_lahir"):
-            tanggal = datetime.strptime(
-                body["tanggal_lahir"],
-                "%Y-%m-%d"
-            ).date()
+            tanggal = datetime.strptime(body["tanggal_lahir"], "%Y-%m-%d").date()
 
         siswa = Siswa(
             nis=body.get("nis"),
@@ -98,21 +113,24 @@ class SiswaDropdownResource:
                 "kelas": [
                     {
                         "id": k.id,
-                        "nama_kelas": k.nama_kelas
+                        "nama": k.nama_kelas  # FE pakai item.nama → cocok
                     }
                     for k in select(k for k in Kelas)
                 ],
                 "jurusan": [
                     {
                         "id": j.id,
-                        "nama_jurusan": j.nama_jurusan
+                        "nama": j.nama_jurusan  # FE pakai item.nama → cocok
                     }
                     for j in select(j for j in Jurusan)
                 ],
                 "tahun_ajaran": [
                     {
                         "id": t.id,
-                        "tahun_ajaran": t.tahun_ajaran
+                        # FIX: ganti key dari "nama" ke "nama" tapi isinya t.tahun_ajaran
+                        # FE pakai item.nama, value = string tahun ajaran (misal "2024/2025")
+                        # supaya cocok dengan s.tahun_ajaran yang disimpan di tabel Siswa
+                        "nama": t.tahun_ajaran
                     }
                     for t in select(t for t in TahunAjaran)
                 ]
@@ -125,12 +143,40 @@ class DetailSiswaResource:
     @db_session
     def on_get(self, req, resp, id):
         siswa = Siswa.get(id=id)
+
         if not siswa:
             raise falcon.HTTPNotFound()
 
         resp.media = {
             "status": True,
-            "data": siswa.to_dict()
+            "data": {
+                "id": siswa.id,
+                "nis": siswa.nis,
+                "nisn": siswa.nisn,
+                "nama": siswa.nama,
+                "tempat_lahir": siswa.tempat_lahir,
+                "tanggal_lahir": siswa.tanggal_lahir.isoformat() if siswa.tanggal_lahir else None,
+                "jenis_kelamin": siswa.jenis_kelamin,
+                "agama": siswa.agama,
+                "golongan_darah": siswa.golongan_darah,
+                "alamat": siswa.alamat,
+                "status": siswa.status,
+                "kelas": siswa.kelas,
+                "jurusan": siswa.jurusan,
+                "tahun_ajaran": siswa.tahun_ajaran,  # string langsung, misal "2024/2025"
+                "tahun_masuk": siswa.tahun_masuk,
+                "hp": siswa.hp,
+                "sekolah_asal": siswa.sekolah_asal,
+                "ayah": siswa.ayah,
+                "ibu": siswa.ibu,
+                "wali": siswa.wali,
+                "pekerjaan_ayah": siswa.pekerjaan_ayah,
+                "pekerjaan_ibu": siswa.pekerjaan_ibu,
+                "hp_ayah": siswa.hp_ayah,
+                "hp_ibu": siswa.hp_ibu,
+                "hp_wali": siswa.hp_wali,
+                "hubungan_wali": siswa.hubungan_wali
+            }
         }
 
     @db_session
@@ -149,10 +195,7 @@ class DetailSiswaResource:
         tgl_final = None
         if data.get("tanggal_lahir"):
             try:
-                tgl_final = datetime.strptime(
-                    data["tanggal_lahir"],
-                    "%Y-%m-%d"
-                ).date()
+                tgl_final = datetime.strptime(data["tanggal_lahir"], "%Y-%m-%d").date()
             except:
                 tgl_final = None
 
