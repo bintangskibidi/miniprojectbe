@@ -3,6 +3,19 @@ from pony.orm import LongStr, Optional, PrimaryKey, Required, Set
 from database import db
 
 
+# --- Tambahan Model Mapel ---
+class Mapel(db.Entity):
+    _table_ = "mapel"
+    id = PrimaryKey(int, auto=True)
+    nama = Required(str, unique=True)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nama": self.nama
+        }
+
+# --- Entity Lainnya ---
 class EkstraKulikuler(db.Entity):
     _table_ = "ekstrakurikuler"
     id = PrimaryKey(int, auto=True)
@@ -18,9 +31,10 @@ class JenisSemester(db.Entity):
     id = PrimaryKey(int, auto=True)
     nama = Required(str, 100)
     status = Required(bool, default=True)
-
     semesters = Set("Semester")
 
+    def to_dict(self):
+        return {"id": self.id, "nama": self.nama, "status": self.status}
 
 class AspekPenilaian(db.Entity):
     _table_ = "aspek_penilaian"
@@ -31,6 +45,8 @@ class AspekPenilaian(db.Entity):
     # 🔥 TAMBAH INI
     raports = Set("Raport")
 
+    def to_dict(self):
+        return {"id": self.id, "kode_aspek": self.kode_aspek, "nama_aspek": self.nama_aspek}
 
 class TahunAjaran(db.Entity):
     _table_ = "tahun_ajaran"
@@ -38,12 +54,13 @@ class TahunAjaran(db.Entity):
     tahun_ajaran = Required(str, unique=True)
     tahun = Required(str)
     status = Required(bool, default=True)
-
     semesters = Set("Semester")
 
     # optional (aman kalau ada)
     raports = Set("Raport")
 
+    def to_dict(self):
+        return {"id": self.id, "tahun_ajaran": self.tahun_ajaran, "tahun": self.tahun, "status": self.status}
 
 class Semester(db.Entity):
     _table_ = "semester"
@@ -55,7 +72,6 @@ class Semester(db.Entity):
 
     # 🔥 TAMBAH INI
     raports = Set("Raport")
-
 
 class User(db.Entity):
     id = PrimaryKey(int, auto=True)
@@ -80,13 +96,11 @@ class Jurusan(db.Entity):
     kode_jurusan = Required(str, unique=True)
     nama_jurusan = Required(str)
 
-
 class WaliKelas(db.Entity):
     id = PrimaryKey(int, auto=True)
     nama_pegawai = Required(str)
     nama_kelas = Required(str)
     tahun_ajaran = Optional(str)
-
 
 class Siswa(db.Entity):
     id = PrimaryKey(int, auto=True)
