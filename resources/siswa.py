@@ -5,6 +5,9 @@ from models.schema import Siswa, Kelas, Jurusan, TahunAjaran
 from datetime import datetime
 
 
+# =========================
+# SISWA LIST + CREATE
+# =========================
 class SiswaResource:
 
     @db_session
@@ -16,14 +19,17 @@ class SiswaResource:
 
         if search:
             keyword = search.lower()
-            query = query.filter(
-                lambda s:
-                    keyword in (s.nama or "").lower() or
-                    keyword in (s.nis or "").lower()
+            query = select(
+                s for s in Siswa
+                if keyword in (s.nama or "").lower()
+                or keyword in (s.nis or "").lower()
             )
 
         if kelas:
-            query = query.filter(lambda s: s.kelas == kelas)
+            query = select(
+                s for s in query
+                if s.kelas == kelas
+            )
 
         data = []
         for s in query:
@@ -67,7 +73,13 @@ class SiswaResource:
 
         tanggal = None
         if body.get("tanggal_lahir"):
-            tanggal = datetime.strptime(body["tanggal_lahir"], "%Y-%m-%d").date()
+            try:
+                tanggal = datetime.strptime(
+                    body["tanggal_lahir"],
+                    "%Y-%m-%d"
+                ).date()
+            except Exception:
+                tanggal = None
 
         siswa = Siswa(
             nis=body.get("nis"),
@@ -104,6 +116,9 @@ class SiswaResource:
         }
 
 
+# =========================
+# DROPDOWN DATA
+# =========================
 class SiswaDropdownResource:
 
     @db_session
@@ -112,33 +127,24 @@ class SiswaDropdownResource:
             "status": True,
             "data": {
                 "kelas": [
-                    {
-                        "id": k.id,
-                        "nama": k.nama_kelas  # FE pakai item.nama → cocok
-                    }
+                    {"id": k.id, "nama": k.nama_kelas}
                     for k in select(k for k in Kelas)
                 ],
                 "jurusan": [
-                    {
-                        "id": j.id,
-                        "nama": j.nama_jurusan  # FE pakai item.nama → cocok
-                    }
+                    {"id": j.id, "nama": j.nama_jurusan}
                     for j in select(j for j in Jurusan)
                 ],
                 "tahun_ajaran": [
-                    {
-                        "id": t.id,
-                        # FIX: ganti key dari "nama" ke "nama" tapi isinya t.tahun_ajaran
-                        # FE pakai item.nama, value = string tahun ajaran (misal "2024/2025")
-                        # supaya cocok dengan s.tahun_ajaran yang disimpan di tabel Siswa
-                        "nama": t.tahun_ajaran
-                    }
+                    {"id": t.id, "nama": t.tahun_ajaran}
                     for t in select(t for t in TahunAjaran)
                 ]
             }
         }
 
 
+# =========================
+# DETAIL + UPDATE + DELETE
+# =========================
 class DetailSiswaResource:
 
     @db_session
@@ -150,7 +156,7 @@ class DetailSiswaResource:
 
         resp.media = {
             "status": True,
-            "data": {
+            "data": siswa.to_dict() if hasattr(siswa, "to_dict") else {
                 "id": siswa.id,
                 "nis": siswa.nis,
                 "nisn": siswa.nisn,
@@ -164,7 +170,7 @@ class DetailSiswaResource:
                 "status": siswa.status,
                 "kelas": siswa.kelas,
                 "jurusan": siswa.jurusan,
-                "tahun_ajaran": siswa.tahun_ajaran,  # string langsung, misal "2024/2025"
+                "tahun_ajaran": siswa.tahun_ajaran,
                 "tahun_masuk": siswa.tahun_masuk,
                 "hp": siswa.hp,
                 "sekolah_asal": siswa.sekolah_asal,
@@ -182,63 +188,53 @@ class DetailSiswaResource:
 
     @db_session
     def on_put(self, req, resp, id):
-        data = req.media
-        siswa = Siswa.get(id=id)
+        try:
+            data = req.media
+            siswa = Siswa.get(id=id)
 
-        if not siswa:
-            resp.status = falcon.HTTP_404
-            resp.media = {
-                "status": False,
-                "message": "Siswa tidak ditemukan"
+            if not siswa:
+                raise falcon.HTTPNotFound()
+
+            # parse tanggal
+            tgl_final = None
+            if data.get("tanggal_lahir"):
+                try:
+                    tgl_final = datetime.strptime(
+                        data["tanggal_lahir"],
+                        "%Y-%m-%d"
+                    ).date()
+                except Exception:
+                    tgl_final = None
+
+            update_fields = {
+                "nis": data.get("nis") or "",
+                "nisn": data.get("nisn") or "",
+                "nama": data.get("nama") or "",
+                "tempat_lahir": data.get("tempat_lahir") or "",
+                "tanggal_lahir": tgl_final,
+                "jenis_kelamin": data.get("jenis_kelamin") or "",
+                "alamat": data.get("alamat") or "",
+                "agama": data.get("agama") or "",
+                "golongan_darah": data.get("golongan_darah") or "",
+                "status": data.get("status") or "Aktif",
+                "tahun_ajaran": data.get("tahun_ajaran") or "",
+                "tahun_masuk": data.get("tahun_masuk") or "",
+                "kelas": data.get("kelas") or "",
+                "jurusan": data.get("jurusan") or "",
+                "hp": data.get("hp") or "",
+                "sekolah_asal": data.get("sekolah_asal") or "",
+                "ayah": data.get("ayah") or "",
+                "ibu": data.get("ibu") or "",
+                "wali": data.get("wali") or "",
+                "pekerjaan_ayah": data.get("pekerjaan_ayah") or "",
+                "pekerjaan_ibu": data.get("pekerjaan_ibu") or "",
+                "hp_ayah": data.get("hp_ayah") or "",
+                "hp_ibu": data.get("hp_ibu") or "",
+                "hp_wali": data.get("hp_wali") or "",
+                "hubungan_wali": data.get("hubungan_wali") or ""
             }
-            return
 
-        tgl_final = None
-        if data.get("tanggal_lahir"):
-            try:
-                tgl_final = datetime.strptime(data["tanggal_lahir"], "%Y-%m-%d").date()
-            except:
-                tgl_final = None
-                if data.get("tanggal_lahir"):
-                    try:
-                        tgl_final = datetime.strptime(
-                            data["tanggal_lahir"],
-                            "%Y-%m-%d"
-                        ).date()
-                    except:
-                        tgl_final = None
-
-                update_fields.update({
-                    "nis": data.get("nis") or "",
-                    "nisn": data.get("nisn") or "",
-                    "nama": data.get("nama") or "",
-                    "tempat_lahir": data.get("tempat_lahir") or "",
-                    "tanggal_lahir": tgl_final,
-                    "jenis_kelamin": data.get("jenis_kelamin") or "",
-                    "alamat": data.get("alamat") or "",
-                    "agama": data.get("agama") or "",
-                    "golongan_darah": data.get("golongan_darah") or "",
-                    "status": data.get("status") or "Aktif",
-                    "tahun_ajaran": data.get("tahun_ajaran") or "",
-                    "tahun_masuk": data.get("tahun_masuk") or "",
-                    "kelas": data.get("kelas") or "",
-                    "jurusan": data.get("jurusan") or "",
-                    "hp": data.get("hp") or "",
-                    "sekolah_asal": data.get("sekolah_asal") or "",
-                    "ayah": data.get("ayah") or "",
-                    "ibu": data.get("ibu") or "",
-                    "wali": data.get("wali") or "",
-                    "pekerjaan_ayah": data.get("pekerjaan_ayah") or "",
-                    "pekerjaan_ibu": data.get("pekerjaan_ibu") or "",
-                    "hp_ayah": data.get("hp_ayah") or "",
-                    "hp_ibu": data.get("hp_ibu") or "",
-                    "hp_wali": data.get("hp_wali") or "",
-                    "hubungan_wali": data.get("hubungan_wali") or ""
-                })
-
-            # Apply only non-empty updates to avoid issues
-            safe_updates = {k: v for k, v in update_fields.items() if v is not None and v != ""}
-            siswa.set(**safe_updates)
+            siswa.set(**update_fields)
 
             resp.media = {
                 "status": True,
@@ -246,14 +242,13 @@ class DetailSiswaResource:
             }
 
         except Exception as e:
-            print(f"ERROR updating siswa {id}: {str(e)}")
-            print(f"Data received: {data}")
-            print(f"Traceback: {traceback.format_exc()}")
-            
+            print("ERROR:", e)
+            print(traceback.format_exc())
+
             resp.status = falcon.HTTP_400
             resp.media = {
                 "status": False,
-                "message": f"Gagal update data: {str(e)}"
+                "message": str(e)
             }
 
     @db_session
@@ -269,4 +264,3 @@ class DetailSiswaResource:
             "status": True,
             "message": "Data siswa berhasil dihapus"
         }
-
