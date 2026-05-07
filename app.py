@@ -50,6 +50,7 @@ from models.schema import (
     Jurusan,
     Kelas,
     TahunAjaran,
+    Presensi,
     AspekPenilaian,
     JenisSemester,
     Semester,
@@ -79,6 +80,7 @@ from resources.mapel import MapelResource
 from resources.semester import SemesterResource
 from resources.ekstra import EkstraKulikulerResource, DetailekstrakurikulerResource
 from resources.raport import RaportResource
+from resources.presensi import PresensiResource
 
 
 # =========================
@@ -100,6 +102,7 @@ kelas_api = KelasResource()
 jurusan_api = JurusanResource()
 tahun_ajaran_api = TahunAjaranResource()
 aspekpenilaian_api = AspekPenilaianResource()
+presensi_api = PresensiResource()
 walikelas_api = WaliKelasResource()
 walikelas_detail_api = DetailwalikelasResource()
 jenis_semester_api = JenisSemesterResource()
@@ -127,6 +130,9 @@ app.add_route('/jurusan/{id:int}', jurusan_api)
 
 app.add_route('/tahun-ajaran', tahun_ajaran_api)
 app.add_route('/tahun-ajaran/{id:int}', tahun_ajaran_api)
+
+app.add_route('/presensi', presensi_api)
+app.add_route('/presensi/{id:int}', presensi_api)
 
 app.add_route('/ekstra', ekstrakurikuler_api)
 app.add_route('/ekstra/{id:int}', ekstrakurikuler_detail_api)
