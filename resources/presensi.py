@@ -103,13 +103,18 @@ class PresensiResource:
     def on_put(self, req, resp, id):
         data = req.media
         try:
-            # Cast ID ke Integer agar Pony ORM tidak bingung
             k = Presensi[int(id)]
-            k.set(**data)
+            # Manual mapping agar aman jika FE kirim CamelCase
+            if 'jamPulang' in data:
+                k.jam_pulang = data['jamPulang']
+            if 'keterangan' in data:
+                k.keterangan = data['keterangan']
+            # tambahkan kolom lain jika perlu
+            commit()
             resp.media = {"status": True, "message": "Data berhasil diubah"}
         except Exception as e:
             resp.status = falcon.HTTP_404
-            resp.media = {"status": False, "message": "Data tidak ditemukan"}
+            resp.media = {"status": False, "message": str(e)}
 
     @db_session
     def on_delete(self, req, resp, id):

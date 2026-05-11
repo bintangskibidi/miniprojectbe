@@ -46,6 +46,7 @@ db.bind(
 # =========================
 from models.schema import (
     User,
+    Pegawai,
     Siswa,
     Jurusan,
     Kelas,
@@ -54,7 +55,8 @@ from models.schema import (
     AspekPenilaian,
     JenisSemester,
     Semester,
-    Raport
+    Raport,
+    JadwalMengajar
 )
 
 
@@ -81,6 +83,11 @@ from resources.semester import SemesterResource
 from resources.ekstra import EkstraKulikulerResource, DetailekstrakurikulerResource
 from resources.raport import RaportResource
 from resources.presensi import PresensiResource
+from resources.jadwalmengajar import JadwalMengajarResource, JadwalDropdownResource
+from resources.pegawai import PegawaiResource
+from resources.distribusijam import DistribusiJamResource
+from resources.riwayatmengajar import RiwayatMengajarResource
+
 
 
 # =========================
@@ -111,7 +118,8 @@ semester_api = SemesterResource()
 ekstrakurikuler_api = EkstraKulikulerResource()
 ekstrakurikuler_detail_api = DetailekstrakurikulerResource()
 raport_api = RaportResource()
-
+jadwal_api = JadwalMengajarResource()
+jadwal_dropdown_api = JadwalDropdownResource()
 
 # =========================
 # ROUTES
@@ -154,3 +162,14 @@ app.add_route('/semester/{id:int}', semester_api)
 
 app.add_route('/raport', raport_api)
 app.add_route('/raport/{id:int}', raport_api)
+
+app.add_route("/jadwal", jadwal_api)
+app.add_route("/jadwal/{id:int}", jadwal_api)
+app.add_route("/jadwal/dropdown", jadwal_dropdown_api)
+
+app.add_route("/pegawai", PegawaiResource())
+app.add_route("/pegawai/{id:int}", PegawaiResource())
+
+app.add_route("/distribusi-jam", DistribusiJamResource())
+app.add_route("/riwayat", RiwayatMengajarResource())
+
