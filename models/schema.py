@@ -2,21 +2,31 @@ from datetime import date
 from pony.orm import LongStr, Optional, PrimaryKey, Required, Set
 from database import db
 
+# ==========================================
+# AUTH & USER
+# ==========================================
+class User(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    email = Required(str, unique=True)
+    password = Required(str)
+    raports = Set("Raport")
 
-# --- Tambahan Model Mapel ---
+# ==========================================
+# AKADEMIK DATA
+# ==========================================
 class Mapel(db.Entity):
     _table_ = "mapel"
     id = PrimaryKey(int, auto=True)
     nama = Required(str, unique=True)
-
     jadwal_mengajar = Set("JadwalMengajar")
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "nama": self.nama
-        }
+        return {"id": self.id, "nama": self.nama}
 
+<<<<<<< HEAD
+class Jurusan(db.Entity):
+    _table_ = "jurusan"
+=======
 
 # --- Entity Lainnya ---
 class EkstraKulikuler(db.Entity):
@@ -28,29 +38,22 @@ class EkstraKulikuler(db.Entity):
     tanggal = Optional(str)
     keterangan = Optional(str)
 
-
-class JenisSemester(db.Entity):
-    _table_ = "jenis_semester"
+class Jurusan(db.Entity):
+>>>>>>> ea837df0623d2d31a6d028d2f12768e63c01ea9e
     id = PrimaryKey(int, auto=True)
-    nama = Required(str, 100)
-    status = Required(bool, default=True)
-    semesters = Set("Semester")
+    kode_jurusan = Required(str, unique=True)
+    nama_jurusan = Required(str)
 
-    def to_dict(self):
-        return {"id": self.id, "nama": self.nama, "status": self.status}
-
+class Kelas(db.Entity):
 
 class AspekPenilaian(db.Entity):
     _table_ = "aspek_penilaian"
     id = PrimaryKey(int, auto=True)
-    kode_aspek = Required(str, unique=True, max_len=20)
-    nama_aspek = Required(str, max_len=100)
-
-    # 🔥 TAMBAH INI
+    kode_kelas = Required(str, unique=True)
+    nama_kelas = Required(str)
     raports = Set("Raport")
-
-    def to_dict(self):
-        return {"id": self.id, "kode_aspek": self.kode_aspek, "nama_aspek": self.nama_aspek}
+    presensis = Set("Presensi")
+    jadwal_mengajar = Set("JadwalMengajar")
 
 
 class TahunAjaran(db.Entity):
@@ -60,13 +63,25 @@ class TahunAjaran(db.Entity):
     tahun = Required(str)
     status = Required(bool, default=True)
     semesters = Set("Semester")
-
-    # optional (aman kalau ada)
     raports = Set("Raport")
+    presensis = Set("Presensi")
 
     def to_dict(self):
         return {"id": self.id, "tahun_ajaran": self.tahun_ajaran, "tahun": self.tahun, "status": self.status}
 
+class JenisSemester(db.Entity):
+    _table_ = "jenis_semester"
+    id = PrimaryKey(int, auto=True)
+    nama = Required(str, 100)
+    status = Required(bool, default=True)
+    semesters = Set("Semester")
+
+<<<<<<< HEAD
+    def to_dict(self):
+        return {"id": self.id, "nama": self.nama, "status": self.status}
+=======
+
+>>>>>>> ea837df0623d2d31a6d028d2f12768e63c01ea9e
 
 class Semester(db.Entity):
     _table_ = "semester"
@@ -75,9 +90,28 @@ class Semester(db.Entity):
     jenis_semester = Required(JenisSemester)
     nama_semester = Required(str, 100)
     status = Required(bool, default=True)
+<<<<<<< HEAD
+    raports = Set("Raport")
+    presensis = Set("Presensi")
+
+=======
 
     raports = Set("Raport")
+    presensis = Set("Presensi")
 
+
+>>>>>>> ea837df0623d2d31a6d028d2f12768e63c01ea9e
+class AspekPenilaian(db.Entity):
+    _table_ = "aspek_penilaian"
+    id = PrimaryKey(int, auto=True)
+    kode_aspek = Required(str, unique=True, max_len=20)
+    nama_aspek = Required(str, max_len=100)
+<<<<<<< HEAD
+    raports = Set("Raport")
+
+    def to_dict(self):
+        return {"id": self.id, "kode_aspek": self.kode_aspek, "nama_aspek": self.nama_aspek}
+=======
 
 class User(db.Entity):
     id = PrimaryKey(int, auto=True)
@@ -95,7 +129,13 @@ class Kelas(db.Entity):
     raports = Set("Raport")
     jadwal_mengajar = Set("JadwalMengajar")
 
+>>>>>>> ea837df0623d2d31a6d028d2f12768e63c01ea9e
 
+# ==========================================
+# SISWA & KEPEGAWAIAN
+# ==========================================
+<<<<<<< HEAD
+=======
 class Jurusan(db.Entity):
     id = PrimaryKey(int, auto=True)
     kode_jurusan = Required(str, unique=True)
@@ -109,6 +149,7 @@ class WaliKelas(db.Entity):
     tahun_ajaran = Optional(str)
 
 
+>>>>>>> ea837df0623d2d31a6d028d2f12768e63c01ea9e
 class Siswa(db.Entity):
     id = PrimaryKey(int, auto=True)
     nis = Required(str, unique=True)
@@ -136,66 +177,12 @@ class Siswa(db.Entity):
     hp_ibu = Optional(str)
     hp_wali = Optional(str)
     hubungan_wali = Optional(str)
-
     raports = Set("Raport")
-
-
-class Raport(db.Entity):
-    _table_ = "raport"
-
-    id = PrimaryKey(int, auto=True)
-
-    siswa = Required(Siswa)
-    kelas = Required(Kelas)
-    semester = Required(Semester)
-    mapel = Required(AspekPenilaian)
-
-    tahun_ajaran = Optional(TahunAjaran)
-    wali = Optional(User)
-
-    kkm = Optional(int)
-    harian = Optional(int)
-    ujian = Optional(int)
-    deskripsi = Optional(str)
-
-
-class JadwalMengajar(db.Entity):
-    _table_ = "jadwal_mengajar"
-
-    id = PrimaryKey(int, auto=True)
-
-    pegawai = Required("Pegawai")
-    mapel = Required("Mapel")
-    kelas = Required("Kelas")
-
-    hari = Required(str)
-    jam_mulai = Required(str)
-    jam_selesai = Required(str)
-
-    tahun_ajaran = Required(str)
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "guru": self.pegawai.nama,
-            "guru_id": self.pegawai.id,
-            "mapel": self.mapel.nama,
-            "mapel_id": self.mapel.id,
-            "kelas": self.kelas.nama_kelas,
-            "kelas_id": self.kelas.id,
-            "hari": self.hari,
-            "jam_mulai": self.jam_mulai,
-            "jam_selesai": self.jam_selesai,
-            "jam": f"{self.jam_mulai} - {self.jam_selesai}",
-            "tahun_ajaran": self.tahun_ajaran
-        }
-
+    presensis = Set("Presensi")
 
 class Pegawai(db.Entity):
     _table_ = "pegawai"
-
     id = PrimaryKey(int, auto=True)
-
     nama = Required(str)
     nip = Optional(str)
     pendidikan = Optional(str)
@@ -209,23 +196,66 @@ class Pegawai(db.Entity):
     jenis_pegawai = Optional(str)
     unit = Optional(str)
     status = Optional(str)
-
     jadwal_mengajar = Set("JadwalMengajar")
 
     def to_dict(self):
         return {
-            "id": self.id,
-            "nama": self.nama,
-            "nip": self.nip,
-            "pendidikan": self.pendidikan,
-            "golongan": self.golongan,
-            "status_pegawai": self.status_pegawai,
-            "tanggal_sk": self.tanggal_sk,
-            "masa_kerja": self.masa_kerja,
-            "jabatan": self.jabatan,
-            "no_hp": self.no_hp,
-            "email": self.email,
-            "jenis_pegawai": self.jenis_pegawai,
-            "unit": self.unit,
-            "status": self.status
+            "id": self.id, "nama": self.nama, "nip": self.nip, "jabatan": self.jabatan
         }
+
+class WaliKelas(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    nama_pegawai = Required(str)
+    nama_kelas = Required(str)
+    tahun_ajaran = Optional(str)
+
+class EkstraKulikuler(db.Entity):
+    _table_ = "ekstrakurikuler"
+    id = PrimaryKey(int, auto=True)
+    nama_kelas = Required(str)
+    nama_pegawai = Required(str)
+    jadwal = Optional(str)
+    tanggal = Optional(str)
+    keterangan = Optional(str)
+
+# ==========================================
+# TRANSAKSIONAL
+# ==========================================
+class Presensi(db.Entity):
+    _table_ = "presensi"
+    id = PrimaryKey(int, auto=True)
+    siswa = Required(Siswa)
+    kelas = Required(Kelas)
+    tanggal = Required(str)
+    jam_masuk = Optional(str)
+    jam_pulang = Optional(str)
+    status_masuk = Optional(str)
+    keterangan = Required(str)
+    detail_ijin = Optional(str)
+    tahun_ajaran = Optional(TahunAjaran)
+    semester = Optional(Semester)
+
+class Raport(db.Entity):
+    _table_ = "raport"
+    id = PrimaryKey(int, auto=True)
+    siswa = Required(Siswa)
+    kelas = Required(Kelas)
+    semester = Required(Semester)
+    mapel = Required(AspekPenilaian)
+    tahun_ajaran = Optional(TahunAjaran)
+    wali = Optional(User)
+    kkm = Optional(int)
+    harian = Optional(int)
+    ujian = Optional(int)
+    deskripsi = Optional(str)
+
+class JadwalMengajar(db.Entity):
+    _table_ = "jadwal_mengajar"
+    id = PrimaryKey(int, auto=True)
+    pegawai = Required(Pegawai)
+    mapel = Required(Mapel)
+    kelas = Required(Kelas)
+    hari = Required(str)
+    jam_mulai = Required(str)
+    jam_selesai = Required(str)
+    tahun_ajaran = Required(str)
