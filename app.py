@@ -87,7 +87,10 @@ from resources.jadwalmengajar import JadwalMengajarResource, JadwalDropdownResou
 from resources.pegawai import PegawaiResource
 from resources.distribusijam import DistribusiJamResource
 from resources.riwayatmengajar import RiwayatMengajarResource
+<<<<<<< HEAD
 
+=======
+>>>>>>> ea837df0623d2d31a6d028d2f12768e63c01ea9e
 
 
 # =========================
