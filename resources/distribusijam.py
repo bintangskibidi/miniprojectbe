@@ -22,8 +22,6 @@ class DistribusiJamResource:
         for j in query:
 
             nama_guru = j.pegawai.nama
-
-            # convert jam ke menit
             mulai_jam, mulai_menit = map(int, j.jam_mulai.split(":"))
             selesai_jam, selesai_menit = map(int, j.jam_selesai.split(":"))
 
@@ -51,7 +49,6 @@ class DistribusiJamResource:
                 "total_menit": total_menit
             })
 
-        # urut terbesar
         data.sort(key=lambda x: x["total_menit"], reverse=True)
 
         resp.media = {
