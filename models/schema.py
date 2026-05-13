@@ -1,6 +1,7 @@
-from datetime import date
+from datetime import date, datetime
 from pony.orm import LongStr, Optional, PrimaryKey, Required, Set
 from database import db
+
 
 # ==========================================
 # AUTH & USER
@@ -10,6 +11,7 @@ class User(db.Entity):
     email = Required(str, unique=True)
     password = Required(str)
     raports = Set("Raport")
+
 
 # ==========================================
 # AKADEMIK DATA
@@ -23,11 +25,13 @@ class Mapel(db.Entity):
     def to_dict(self):
         return {"id": self.id, "nama": self.nama}
 
+
 class Jurusan(db.Entity):
     _table_ = "jurusan"
     id = PrimaryKey(int, auto=True)
     kode_jurusan = Required(str, unique=True)
     nama_jurusan = Required(str)
+
 
 class Kelas(db.Entity):
     id = PrimaryKey(int, auto=True)
@@ -36,6 +40,7 @@ class Kelas(db.Entity):
     raports = Set("Raport")
     presensis = Set("Presensi")
     jadwal_mengajar = Set("JadwalMengajar")
+
 
 class TahunAjaran(db.Entity):
     _table_ = "tahun_ajaran"
@@ -48,7 +53,13 @@ class TahunAjaran(db.Entity):
     presensis = Set("Presensi")
 
     def to_dict(self):
-        return {"id": self.id, "tahun_ajaran": self.tahun_ajaran, "tahun": self.tahun, "status": self.status}
+        return {
+            "id": self.id,
+            "tahun_ajaran": self.tahun_ajaran,
+            "tahun": self.tahun,
+            "status": self.status
+        }
+
 
 class JenisSemester(db.Entity):
     _table_ = "jenis_semester"
@@ -60,6 +71,7 @@ class JenisSemester(db.Entity):
     def to_dict(self):
         return {"id": self.id, "nama": self.nama, "status": self.status}
 
+
 class Semester(db.Entity):
     _table_ = "semester"
     id = PrimaryKey(int, auto=True)
@@ -69,6 +81,7 @@ class Semester(db.Entity):
     status = Required(bool, default=True)
     raports = Set("Raport")
     presensis = Set("Presensi")
+
 
 class AspekPenilaian(db.Entity):
     _table_ = "aspek_penilaian"
@@ -81,36 +94,109 @@ class AspekPenilaian(db.Entity):
         return {"id": self.id, "kode_aspek": self.kode_aspek, "nama_aspek": self.nama_aspek}
 
 
+# ==========================================
+# SISWA
+# ==========================================
 class Siswa(db.Entity):
     id = PrimaryKey(int, auto=True)
     nis = Required(str, unique=True)
     nisn = Optional(str)
     nama = Required(str)
+
     tempat_lahir = Optional(str)
     tanggal_lahir = Optional(date)
     jenis_kelamin = Optional(str)
     alamat = Optional(LongStr)
+
     agama = Optional(str)
     golongan_darah = Optional(str)
     status = Optional(str)
+
     tahun_ajaran = Optional(str)
     tahun_masuk = Optional(str)
     kelas = Optional(str)
     jurusan = Optional(str)
+
     hp = Optional(str)
     sekolah_asal = Optional(str)
+
     ayah = Optional(str)
     ibu = Optional(str)
     wali = Optional(str)
+
     pekerjaan_ayah = Optional(str)
     pekerjaan_ibu = Optional(str)
+
     hp_ayah = Optional(str)
     hp_ibu = Optional(str)
     hp_wali = Optional(str)
     hubungan_wali = Optional(str)
+
     raports = Set("Raport")
     presensis = Set("Presensi")
 
+
+# ==========================================
+# BUKU
+# ==========================================
+class Buku(db.Entity):
+    _table_ = "buku"
+
+    id = PrimaryKey(int, auto=True)
+    barcode = Optional(str)
+    judul = Required(str)
+    penulis = Optional(str)
+    penerbit = Optional(str)
+    tahun = Optional(date)
+    isbn = Optional(str)
+    harga = Optional(int, default=0)
+    kondisi = Optional(str)
+    kategori = Optional(str)
+    rak = Optional(str)
+    stok = Optional(int, default=1)
+
+
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "barcode": self.barcode,
+            "judul": self.judul,
+            "penulis": self.penulis,
+            "penerbit": self.penerbit,
+            "tahun": self.tahun.isoformat() if self.tahun else None,
+            "isbn": self.isbn,
+            "harga": self.harga,
+            "kondisi": self.kondisi,
+            "kategori": self.kategori,
+            "rak": self.rak,
+            "stok": self.stok
+        }
+
+
+# ==========================================
+# PEMINJAMAN BUKU (STRING VERSION)
+# ==========================================
+class Peminjaman(db.Entity):
+    _table_ = "peminjaman"
+
+    id = PrimaryKey(int, auto=True)
+
+    # sesuai request kamu: pakai string
+    nama = Required(str)
+    buku = Required(str)
+
+    jumlah = Required(int, default=1)
+
+    pinjam = Required(datetime, default=datetime.now)
+    kembali = Optional(datetime)
+
+    status = Required(str, default="Dipinjam")
+
+
+# ==========================================
+# PEGAWAI
+# ==========================================
 class Pegawai(db.Entity):
     _table_ = "pegawai"
     id = PrimaryKey(int, auto=True)
@@ -127,18 +213,24 @@ class Pegawai(db.Entity):
     jenis_pegawai = Optional(str)
     unit = Optional(str)
     status = Optional(str)
+
     jadwal_mengajar = Set("JadwalMengajar")
 
     def to_dict(self):
         return {
-            "id": self.id, "nama": self.nama, "nip": self.nip, "jabatan": self.jabatan
+            "id": self.id,
+            "nama": self.nama,
+            "nip": self.nip,
+            "jabatan": self.jabatan
         }
+
 
 class WaliKelas(db.Entity):
     id = PrimaryKey(int, auto=True)
     nama_pegawai = Required(str)
     nama_kelas = Required(str)
     tahun_ajaran = Optional(str)
+
 
 class EkstraKulikuler(db.Entity):
     _table_ = "ekstrakurikuler"
@@ -148,6 +240,7 @@ class EkstraKulikuler(db.Entity):
     jadwal = Optional(str)
     tanggal = Optional(str)
     keterangan = Optional(str)
+
 
 # ==========================================
 # TRANSAKSIONAL
@@ -166,6 +259,7 @@ class Presensi(db.Entity):
     tahun_ajaran = Optional(TahunAjaran)
     semester = Optional(Semester)
 
+
 class Raport(db.Entity):
     _table_ = "raport"
     id = PrimaryKey(int, auto=True)
@@ -179,6 +273,7 @@ class Raport(db.Entity):
     harian = Optional(int)
     ujian = Optional(int)
     deskripsi = Optional(str)
+
 
 class JadwalMengajar(db.Entity):
     _table_ = "jadwal_mengajar"
