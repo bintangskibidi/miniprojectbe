@@ -54,6 +54,8 @@ from models.schema import (
     Presensi,
     AspekPenilaian,
     JenisSemester,
+    Peminjaman,
+    Buku,
     Semester,
     Raport,
     JadwalMengajar
@@ -87,6 +89,8 @@ from resources.jadwalmengajar import JadwalMengajarResource, JadwalDropdownResou
 from resources.pegawai import PegawaiResource
 from resources.distribusijam import DistribusiJamResource
 from resources.riwayatmengajar import RiwayatMengajarResource
+from resources.databuku import DataBukuResource, DetailBukuResource
+from resources.peminjamanbuku import DataPeminjamanResource, DetailPeminjamanResource
 
 
 
@@ -108,6 +112,10 @@ siswa_dropdown_api = SiswaDropdownResource()
 kelas_api = KelasResource()
 jurusan_api = JurusanResource()
 tahun_ajaran_api = TahunAjaranResource()
+databuku_api = DataBukuResource()
+databuku_detail_api = DetailBukuResource()
+peminjaman_api = DataPeminjamanResource()
+peminjaman_detail_api = DetailPeminjamanResource()
 aspekpenilaian_api = AspekPenilaianResource()
 presensi_api = PresensiResource()
 walikelas_api = WaliKelasResource()
@@ -133,6 +141,11 @@ app.add_route('/siswa/{id:int}', DetailSiswaResource())
 app.add_route('/kelas', kelas_api)
 app.add_route('/kelas/{id:int}', kelas_api)
 
+
+app.add_route('/databuku', databuku_api)
+app.add_route('/databuku/{id:int}', databuku_detail_api)
+
+
 app.add_route('/jurusan', jurusan_api)
 app.add_route('/jurusan/{id:int}', jurusan_api)
 
@@ -150,6 +163,9 @@ app.add_route('/aspek-penilaian/{id:int}', aspekpenilaian_api)
 
 app.add_route('/walikelas', walikelas_api)
 app.add_route('/walikelas/{id:int}', walikelas_detail_api)
+
+app.add_route('/peminjaman', peminjaman_api)
+app.add_route('/peminjaman/{id:int}', peminjaman_detail_api)
 
 app.add_route('/jenis-semester', jenis_semester_api)
 app.add_route('/jenis-semester/{id:int}', jenis_semester_api)
