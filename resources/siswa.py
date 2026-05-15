@@ -19,6 +19,7 @@ class SiswaResource:
 
         if search:
             keyword = search.lower()
+
             query = select(
                 s for s in Siswa
                 if keyword in (s.nama or "").lower()
@@ -32,6 +33,7 @@ class SiswaResource:
             )
 
         data = []
+
         for s in query:
             data.append({
                 "id": s.id,
@@ -39,7 +41,11 @@ class SiswaResource:
                 "nisn": s.nisn,
                 "nama": s.nama,
                 "tempat_lahir": s.tempat_lahir,
-                "tanggal_lahir": s.tanggal_lahir.isoformat() if s.tanggal_lahir else None,
+
+                "tanggal_lahir":
+                    s.tanggal_lahir.isoformat()
+                    if s.tanggal_lahir else None,
+
                 "jenis_kelamin": s.jenis_kelamin,
                 "agama": s.agama,
                 "golongan_darah": s.golongan_darah,
@@ -72,12 +78,14 @@ class SiswaResource:
         body = req.media
 
         tanggal = None
+
         if body.get("tanggal_lahir"):
             try:
                 tanggal = datetime.strptime(
                     body["tanggal_lahir"],
                     "%Y-%m-%d"
                 ).date()
+
             except Exception:
                 tanggal = None
 
@@ -127,15 +135,26 @@ class SiswaDropdownResource:
             "status": True,
             "data": {
                 "kelas": [
-                    {"id": k.id, "nama": k.nama_kelas}
+                    {
+                        "id": k.id,
+                        "nama": k.nama_kelas
+                    }
                     for k in select(k for k in Kelas)
                 ],
+
                 "jurusan": [
-                    {"id": j.id, "nama": j.nama_jurusan}
+                    {
+                        "id": j.id,
+                        "nama": j.nama_jurusan
+                    }
                     for j in select(j for j in Jurusan)
                 ],
+
                 "tahun_ajaran": [
-                    {"id": t.id, "nama": t.tahun_ajaran}
+                    {
+                        "id": t.id,
+                        "nama": t.tahun_ajaran
+                    }
                     for t in select(t for t in TahunAjaran)
                 ]
             }
@@ -156,13 +175,22 @@ class DetailSiswaResource:
 
         resp.media = {
             "status": True,
-            "data": siswa.to_dict() if hasattr(siswa, "to_dict") else {
+
+            "data":
+                siswa.to_dict()
+                if hasattr(siswa, "to_dict")
+                else {
+
                 "id": siswa.id,
                 "nis": siswa.nis,
                 "nisn": siswa.nisn,
                 "nama": siswa.nama,
                 "tempat_lahir": siswa.tempat_lahir,
-                "tanggal_lahir": siswa.tanggal_lahir.isoformat() if siswa.tanggal_lahir else None,
+
+                "tanggal_lahir":
+                    siswa.tanggal_lahir.isoformat()
+                    if siswa.tanggal_lahir else None,
+
                 "jenis_kelamin": siswa.jenis_kelamin,
                 "agama": siswa.agama,
                 "golongan_darah": siswa.golongan_darah,
@@ -190,48 +218,167 @@ class DetailSiswaResource:
     def on_put(self, req, resp, id):
         try:
             data = req.media
+
             siswa = Siswa.get(id=id)
 
             if not siswa:
                 raise falcon.HTTPNotFound()
 
-            # parse tanggal
-            tgl_final = None
+            # =========================
+            # PARSE TANGGAL
+            # =========================
+            tgl_final = siswa.tanggal_lahir
+
             if data.get("tanggal_lahir"):
                 try:
                     tgl_final = datetime.strptime(
                         data["tanggal_lahir"],
                         "%Y-%m-%d"
                     ).date()
-                except Exception:
-                    tgl_final = None
 
+                except Exception:
+                    tgl_final = siswa.tanggal_lahir
+
+            # =========================
+            # UPDATE FIELD
+            # =========================
             update_fields = {
-                "nis": data.get("nis") or "",
-                "nisn": data.get("nisn") or "",
-                "nama": data.get("nama") or "",
-                "tempat_lahir": data.get("tempat_lahir") or "",
-                "tanggal_lahir": tgl_final,
-                "jenis_kelamin": data.get("jenis_kelamin") or "",
-                "alamat": data.get("alamat") or "",
-                "agama": data.get("agama") or "",
-                "golongan_darah": data.get("golongan_darah") or "",
-                "status": data.get("status") or "Aktif",
-                "tahun_ajaran": data.get("tahun_ajaran") or "",
-                "tahun_masuk": data.get("tahun_masuk") or "",
-                "kelas": data.get("kelas") or "",
-                "jurusan": data.get("jurusan") or "",
-                "hp": data.get("hp") or "",
-                "sekolah_asal": data.get("sekolah_asal") or "",
-                "ayah": data.get("ayah") or "",
-                "ibu": data.get("ibu") or "",
-                "wali": data.get("wali") or "",
-                "pekerjaan_ayah": data.get("pekerjaan_ayah") or "",
-                "pekerjaan_ibu": data.get("pekerjaan_ibu") or "",
-                "hp_ayah": data.get("hp_ayah") or "",
-                "hp_ibu": data.get("hp_ibu") or "",
-                "hp_wali": data.get("hp_wali") or "",
-                "hubungan_wali": data.get("hubungan_wali") or ""
+                "nis": data.get("nis", siswa.nis),
+
+                "nisn":
+                    data.get("nisn", siswa.nisn),
+
+                "nama":
+                    data.get("nama", siswa.nama),
+
+                "tempat_lahir":
+                    data.get(
+                        "tempat_lahir",
+                        siswa.tempat_lahir
+                    ),
+
+                "tanggal_lahir":
+                    tgl_final,
+
+                "jenis_kelamin":
+                    data.get(
+                        "jenis_kelamin",
+                        siswa.jenis_kelamin
+                    ),
+
+                "alamat":
+                    data.get(
+                        "alamat",
+                        siswa.alamat
+                    ),
+
+                "agama":
+                    data.get(
+                        "agama",
+                        siswa.agama
+                    ),
+
+                "golongan_darah":
+                    data.get(
+                        "golongan_darah",
+                        siswa.golongan_darah
+                    ),
+
+                "status":
+                    data.get(
+                        "status",
+                        siswa.status
+                    ),
+
+                "tahun_ajaran":
+                    data.get(
+                        "tahun_ajaran",
+                        siswa.tahun_ajaran
+                    ),
+
+                "tahun_masuk":
+                    data.get(
+                        "tahun_masuk",
+                        siswa.tahun_masuk
+                    ),
+
+                "kelas":
+                    data.get(
+                        "kelas",
+                        siswa.kelas
+                    ),
+
+                "jurusan":
+                    data.get(
+                        "jurusan",
+                        siswa.jurusan
+                    ),
+
+                "hp":
+                    data.get(
+                        "hp",
+                        siswa.hp
+                    ),
+
+                "sekolah_asal":
+                    data.get(
+                        "sekolah_asal",
+                        siswa.sekolah_asal
+                    ),
+
+                "ayah":
+                    data.get(
+                        "ayah",
+                        siswa.ayah
+                    ),
+
+                "ibu":
+                    data.get(
+                        "ibu",
+                        siswa.ibu
+                    ),
+
+                "wali":
+                    data.get(
+                        "wali",
+                        siswa.wali
+                    ),
+
+                "pekerjaan_ayah":
+                    data.get(
+                        "pekerjaan_ayah",
+                        siswa.pekerjaan_ayah
+                    ),
+
+                "pekerjaan_ibu":
+                    data.get(
+                        "pekerjaan_ibu",
+                        siswa.pekerjaan_ibu
+                    ),
+
+                "hp_ayah":
+                    data.get(
+                        "hp_ayah",
+                        siswa.hp_ayah
+                    ),
+
+                "hp_ibu":
+                    data.get(
+                        "hp_ibu",
+                        siswa.hp_ibu
+                    ),
+
+                "hp_wali":
+                    data.get(
+                        "hp_wali",
+                        siswa.hp_wali
+                    ),
+
+                "hubungan_wali":
+                    data.get(
+                        "hubungan_wali",
+                        siswa.hubungan_wali
+                    )
             }
 
             siswa.set(**update_fields)
@@ -246,6 +393,7 @@ class DetailSiswaResource:
             print(traceback.format_exc())
 
             resp.status = falcon.HTTP_400
+
             resp.media = {
                 "status": False,
                 "message": str(e)

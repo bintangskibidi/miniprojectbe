@@ -1,6 +1,14 @@
 import falcon
 from pony.orm import db_session, select
-from models.schema import Raport, Siswa, Kelas, Semester, AspekPenilaian, TahunAjaran, User
+from models.schema import (
+    Raport,
+    Siswa,
+    Kelas,
+    Semester,
+    AspekPenilaian,
+    TahunAjaran,
+    Pegawai
+)
 
 
 class RaportResource:
@@ -25,6 +33,7 @@ class RaportResource:
         )[:]
 
         result = []
+
         for r in data:
             result.append({
                 "id": r.id,
@@ -37,12 +46,11 @@ class RaportResource:
 
         resp.media = result
 
-
     # =========================
-    # AUTO SAVE (PUT)
+    # AUTO SAVE RAPORT
     # =========================
     @db_session
-    def on_put(self, req, resp, id):
+    def on_post(self, req, resp):
         data = req.media
 
         siswa_id = int(data.get("siswa_id"))
@@ -53,16 +61,16 @@ class RaportResource:
         tahun_id = data.get("tahun_ajaran_id")
         wali_id = data.get("wali_id")
 
-        # ambil relasi
+        # relasi
         siswa = Siswa.get(id=siswa_id)
         kelas = Kelas.get(id=kelas_id)
         semester = Semester.get(id=semester_id)
         mapel = AspekPenilaian.get(id=mapel_id)
 
         tahun = TahunAjaran.get(id=tahun_id) if tahun_id else None
-        wali = User.get(id=wali_id) if wali_id else None
+        wali = Pegawai.get(id=wali_id) if wali_id else None
 
-        # cek existing (biar gak duplicate)
+        # cek existing
         raport = Raport.get(
             siswa=siswa,
             kelas=kelas,
@@ -70,6 +78,7 @@ class RaportResource:
             mapel=mapel
         )
 
+        # create baru jika belum ada
         if not raport:
             raport = Raport(
                 siswa=siswa,
@@ -78,7 +87,7 @@ class RaportResource:
                 mapel=mapel
             )
 
-        # update nilai
+        # update data
         raport.kkm = data.get("kkm")
         raport.harian = data.get("harian")
         raport.ujian = data.get("ujian")
@@ -86,10 +95,12 @@ class RaportResource:
 
         if tahun:
             raport.tahun_ajaran = tahun
+
         if wali:
             raport.wali = wali
 
         resp.media = {
-            "message": "saved",
+            "status": True,
+            "message": "Raport saved",
             "siswa_id": siswa_id
         }
