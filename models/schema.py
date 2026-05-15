@@ -199,19 +199,28 @@ class Peminjaman(db.Entity):
 # ==========================================
 class Pegawai(db.Entity):
     _table_ = "pegawai"
+
     id = PrimaryKey(int, auto=True)
+
     nama = Required(str)
     nip = Optional(str)
+
     pendidikan = Optional(str)
     golongan = Optional(str)
     status_pegawai = Optional(str)
+
     tanggal_sk = Optional(str)
     masa_kerja = Optional(str)
+
     jabatan = Required(str)
+
     no_hp = Optional(str)
     email = Optional(str)
+
     jenis_pegawai = Optional(str)
+
     unit = Optional(str)
+
     status = Optional(str)
 
     jadwal_mengajar = Set("JadwalMengajar")
@@ -221,7 +230,17 @@ class Pegawai(db.Entity):
             "id": self.id,
             "nama": self.nama,
             "nip": self.nip,
-            "jabatan": self.jabatan
+            "pendidikan": self.pendidikan,
+            "golongan": self.golongan,
+            "status_pegawai": self.status_pegawai,
+            "tanggal_sk": self.tanggal_sk,
+            "masa_kerja": self.masa_kerja,
+            "jabatan": self.jabatan,
+            "no_hp": self.no_hp,
+            "email": self.email,
+            "jenis_pegawai": self.jenis_pegawai,
+            "unit": self.unit,
+            "status": self.status
         }
 
 

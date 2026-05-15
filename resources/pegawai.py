@@ -1,7 +1,6 @@
-import falcon
 from pony.orm import db_session, select, commit
+import falcon
 from models.schema import Pegawai
-from datetime import date
 
 
 class PegawaiResource:
@@ -28,6 +27,7 @@ class PegawaiResource:
             golongan=data.get("golongan"),
             status_pegawai=data.get("status_pegawai"),
             tanggal_sk=data.get("tanggal_sk"),
+            masa_kerja=data.get("masa_kerja"),
             jabatan=data["jabatan"],
             no_hp=data.get("no_hp"),
             email=data.get("email"),
@@ -59,6 +59,7 @@ class PegawaiResource:
         pegawai.golongan = data.get("golongan")
         pegawai.status_pegawai = data.get("status_pegawai")
         pegawai.tanggal_sk = data.get("tanggal_sk")
+        pegawai.masa_kerja = data.get("masa_kerja")
         pegawai.jabatan = data["jabatan"]
         pegawai.no_hp = data.get("no_hp")
         pegawai.email = data.get("email")
@@ -82,6 +83,7 @@ class PegawaiResource:
             raise falcon.HTTPNotFound()
 
         pegawai.delete()
+
         commit()
 
         resp.media = {
