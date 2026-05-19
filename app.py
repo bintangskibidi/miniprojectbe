@@ -57,8 +57,11 @@ from models.schema import (
     Peminjaman,
     Buku,
     Semester,
+    InformasiLembaga,
+    Banner,
     Raport,
-    JadwalMengajar
+    JadwalMengajar,
+    BackupFile
 )
 
 
@@ -83,6 +86,7 @@ from resources.jenissemester import JenisSemesterResource
 from resources.mapel import MapelResource
 from resources.semester import SemesterResource
 from resources.ekstra import EkstraKulikulerResource, DetailekstrakurikulerResource
+from resources.backupdata import BackupDataResource
 from resources.raport import RaportResource
 from resources.presensi import PresensiResource
 from resources.jadwalmengajar import JadwalMengajarResource, JadwalDropdownResource
@@ -91,6 +95,10 @@ from resources.distribusijam import DistribusiJamResource
 from resources.riwayatmengajar import RiwayatMengajarResource
 from resources.databuku import DataBukuResource, DetailBukuResource
 from resources.peminjamanbuku import DataPeminjamanResource, DetailPeminjamanResource
+from resources.informasilembaga import InformasiLembagaResource, DetailInformasiLembagaResource
+from resources.banneraplikasi import BannerAplikasiResource
+from resources.settingabsensi import SettingAbsensiResource
+
 
 
 
@@ -113,8 +121,13 @@ kelas_api = KelasResource()
 jurusan_api = JurusanResource()
 tahun_ajaran_api = TahunAjaranResource()
 databuku_api = DataBukuResource()
+settingabsensi_api = SettingAbsensiResource()
+informasilembaga_api = InformasiLembagaResource()
+informasilembaga_detail_api = DetailInformasiLembagaResource()
 databuku_detail_api = DetailBukuResource()
 peminjaman_api = DataPeminjamanResource()
+backup_api = BackupDataResource()
+banner_api = BannerAplikasiResource()
 peminjaman_detail_api = DetailPeminjamanResource()
 aspekpenilaian_api = AspekPenilaianResource()
 presensi_api = PresensiResource()
@@ -141,13 +154,25 @@ app.add_route('/siswa/{id:int}', DetailSiswaResource())
 app.add_route('/kelas', kelas_api)
 app.add_route('/kelas/{id:int}', kelas_api)
 
+app.add_route('/settingabsensi', settingabsensi_api)
+app.add_route('/settingabsensi/{id:int}', settingabsensi_api)
+
 
 app.add_route('/databuku', databuku_api)
 app.add_route('/databuku/{id:int}', databuku_detail_api)
 
+app.add_route('/informasilembaga', informasilembaga_api)
+app.add_route('/informasilembaga/{id:int}', informasilembaga_detail_api)
+
 
 app.add_route('/jurusan', jurusan_api)
 app.add_route('/jurusan/{id:int}', jurusan_api)
+
+app.add_route('/backup', backup_api)
+app.add_route('/backup/{id:int}', backup_api)
+
+app.add_route('/banner', banner_api)
+app.add_route('/banner/{id:int}', banner_api)
 
 app.add_route('/tahun-ajaran', tahun_ajaran_api)
 app.add_route('/tahun-ajaran/{id:int}', tahun_ajaran_api)

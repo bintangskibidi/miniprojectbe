@@ -83,6 +83,27 @@ class Semester(db.Entity):
     presensis = Set("Presensi")
 
 
+class InformasiLembaga(db.Entity):
+    judul = Required(str)
+    isi = Required(str)
+    tanggal = Optional(date)
+
+
+class Banner(db.Entity):
+    _table_ = 'banner_aplikasi'
+    nama = Required(str)
+    tanggal = Required(datetime, default=datetime.now)
+    gambar = Required(str)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nama": self.nama,
+            "tanggal": self.tanggal.strftime("%Y-%m-%d %H:%M:%S"),
+            "gambar": self.gambar
+        }
+
+
 class AspekPenilaian(db.Entity):
     _table_ = "aspek_penilaian"
     id = PrimaryKey(int, auto=True)
@@ -155,8 +176,6 @@ class Buku(db.Entity):
     rak = Optional(str)
     stok = Optional(int, default=1)
 
-
-
     def to_dict(self):
         return {
             "id": self.id,
@@ -181,16 +200,11 @@ class Peminjaman(db.Entity):
     _table_ = "peminjaman"
 
     id = PrimaryKey(int, auto=True)
-
-    # sesuai request kamu: pakai string
     nama = Required(str)
     buku = Required(str)
-
     jumlah = Required(int, default=1)
-
     pinjam = Required(datetime, default=datetime.now)
     kembali = Optional(datetime)
-
     status = Required(str, default="Dipinjam")
 
 
@@ -201,28 +215,19 @@ class Pegawai(db.Entity):
     _table_ = "pegawai"
 
     id = PrimaryKey(int, auto=True)
-
     nama = Required(str)
     nip = Optional(str)
-
     pendidikan = Optional(str)
     golongan = Optional(str)
     status_pegawai = Optional(str)
-
     tanggal_sk = Optional(str)
     masa_kerja = Optional(str)
-
     jabatan = Required(str)
-
     no_hp = Optional(str)
     email = Optional(str)
-
     jenis_pegawai = Optional(str)
-
     unit = Optional(str)
-
     status = Optional(str)
-
     jadwal_mengajar = Set("JadwalMengajar")
 
     def to_dict(self):
@@ -318,4 +323,52 @@ class JadwalMengajar(db.Entity):
             "jam_mulai": self.jam_mulai,
             "jam_selesai": self.jam_selesai,
             "tahun_ajaran": self.tahun_ajaran
+        }
+
+
+class AbsensiGPS(db.Entity):
+    _table_ = "absensi_gps"
+
+    id = PrimaryKey(int, auto=True)
+    nama = Required(str)
+    latitude = Required(str)
+    longitude = Required(str)
+    radius = Required(str)
+    masuk = Required(str)  # Format string "HH:MM" dari frontend
+    selesai = Required(str)  # Format string "HH:MM" dari frontend
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nama": self.nama,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "radius": self.radius,
+            "masuk": self.masuk,
+            "selesai": self.selesai
+        }
+
+# ==========================================
+# BACKUP SYSTEM
+# ==========================================
+class BackupFile(db.Entity):
+    _table_ = "backup_file"
+
+    id = PrimaryKey(int, auto=True)
+    nama = Required(str, unique=True)
+    ukuran = Required(str)
+    # Digabung menjadi satu objek datetime sesuai instruksi terbaru
+    waktu_backup = Required(datetime, default=datetime.now)
+
+    def to_dict(self):
+        # Array pemetaan bulan Indonesia untuk kebutuhan output frontend
+        bulan_indo = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"]
+
+        return {
+            "id": self.id,
+            "nama": self.nama,
+            "ukuran": self.ukuran,
+            # Memecah datetime menjadi format tanggal dan waktu terpisah untuk UI React Anda
+            "tanggal": f"{self.waktu_backup.day:02d} {bulan_indo[self.waktu_backup.month - 1]} {self.waktu_backup.year}",
+            "waktu": self.waktu_backup.strftime("%H:%M:%S")
         }
