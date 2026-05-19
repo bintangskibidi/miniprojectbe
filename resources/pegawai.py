@@ -8,85 +8,141 @@ class PegawaiResource:
     # ================= GET =================
     @db_session
     def on_get(self, req, resp):
-        data = [p.to_dict() for p in select(p for p in Pegawai)]
 
-        resp.media = {
-            "status": True,
-            "data": data
-        }
+        try:
+            data = [p.to_dict() for p in select(p for p in Pegawai)]
+
+            resp.media = {
+                "status": True,
+                "data": data
+            }
+
+        except Exception as e:
+
+            print("ERROR GET PEGAWAI:", e)
+
+            resp.status = falcon.HTTP_400
+
+            resp.media = {
+                "status": False,
+                "message": str(e)
+            }
 
     # ================= CREATE =================
     @db_session
     def on_post(self, req, resp):
-        data = req.media
 
-        Pegawai(
-            nama=data["nama"],
-            nip=data.get("nip"),
-            pendidikan=data.get("pendidikan"),
-            golongan=data.get("golongan"),
-            status_pegawai=data.get("status_pegawai"),
-            tanggal_sk=data.get("tanggal_sk"),
-            masa_kerja=data.get("masa_kerja"),
-            jabatan=data["jabatan"],
-            no_hp=data.get("no_hp"),
-            email=data.get("email"),
-            jenis_pegawai=data.get("jenis_pegawai"),
-            unit=data.get("unit"),
-            status=data.get("status")
-        )
+        try:
+            data = req.media
 
-        commit()
+            Pegawai(
+                nama=data.get("nama"),
+                nip=data.get("nip"),
+                pendidikan=data.get("pendidikan"),
+                golongan=data.get("golongan"),
+                status_pegawai=data.get("status_pegawai"),
 
-        resp.media = {
-            "status": True,
-            "message": "Pegawai berhasil ditambahkan"
-        }
+                # STRING BIASA
+                tanggal_sk=data.get("tanggal_sk"),
+
+                jabatan=data.get("jabatan"),
+                no_hp=data.get("no_hp"),
+                email=data.get("email"),
+                jenis_pegawai=data.get("jenis_pegawai"),
+                unit=data.get("unit"),
+                status=data.get("status")
+            )
+
+            commit()
+
+            resp.media = {
+                "status": True,
+                "message": "Pegawai berhasil ditambahkan"
+            }
+
+        except Exception as e:
+
+            print("ERROR POST PEGAWAI:", e)
+
+            resp.status = falcon.HTTP_400
+
+            resp.media = {
+                "status": False,
+                "message": str(e)
+            }
 
     # ================= UPDATE =================
     @db_session
     def on_put(self, req, resp, id):
-        pegawai = Pegawai.get(id=id)
 
-        if not pegawai:
-            raise falcon.HTTPNotFound()
+        try:
+            pegawai = Pegawai.get(id=id)
 
-        data = req.media
+            if not pegawai:
+                raise falcon.HTTPNotFound()
 
-        pegawai.nama = data["nama"]
-        pegawai.nip = data.get("nip")
-        pegawai.pendidikan = data.get("pendidikan")
-        pegawai.golongan = data.get("golongan")
-        pegawai.status_pegawai = data.get("status_pegawai")
-        pegawai.tanggal_sk = data.get("tanggal_sk")
-        pegawai.masa_kerja = data.get("masa_kerja")
-        pegawai.jabatan = data["jabatan"]
-        pegawai.no_hp = data.get("no_hp")
-        pegawai.email = data.get("email")
-        pegawai.jenis_pegawai = data.get("jenis_pegawai")
-        pegawai.unit = data.get("unit")
-        pegawai.status = data.get("status")
+            data = req.media
 
-        commit()
+            pegawai.nama = data.get("nama")
+            pegawai.nip = data.get("nip")
+            pegawai.pendidikan = data.get("pendidikan")
+            pegawai.golongan = data.get("golongan")
+            pegawai.status_pegawai = data.get("status_pegawai")
 
-        resp.media = {
-            "status": True,
-            "message": "Pegawai berhasil diupdate"
-        }
+            # STRING BIASA
+            pegawai.tanggal_sk = data.get("tanggal_sk")
+
+            pegawai.jabatan = data.get("jabatan")
+            pegawai.no_hp = data.get("no_hp")
+            pegawai.email = data.get("email")
+            pegawai.jenis_pegawai = data.get("jenis_pegawai")
+            pegawai.unit = data.get("unit")
+            pegawai.status = data.get("status")
+
+            commit()
+
+            resp.media = {
+                "status": True,
+                "message": "Pegawai berhasil diupdate"
+            }
+
+        except Exception as e:
+
+            print("ERROR UPDATE PEGAWAI:", e)
+
+            resp.status = falcon.HTTP_400
+
+            resp.media = {
+                "status": False,
+                "message": str(e)
+            }
 
     # ================= DELETE =================
     @db_session
     def on_delete(self, req, resp, id):
-        pegawai = Pegawai.get(id=id)
 
-        if not pegawai:
-            raise falcon.HTTPNotFound()
+        try:
+            pegawai = Pegawai.get(id=id)
 
-        pegawai.delete()
+            if not pegawai:
+                raise falcon.HTTPNotFound()
 
-        commit()
+            pegawai.delete()
 
-        resp.media = {
-            "status": True,
-            "message": "Pegawai berhasil dihapus"
-        }
+            commit()
+
+            resp.media = {
+                "status": True,
+                "message": "Pegawai berhasil dihapus"
+            }
+
+        except Exception as e:
+
+            print("ERROR DELETE PEGAWAI:", e)
+
+            resp.status = falcon.HTTP_400
+
+            resp.media = {
+                "status": False,
+                "message": str(e)
+            }
