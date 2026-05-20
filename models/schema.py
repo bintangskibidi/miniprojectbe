@@ -90,7 +90,10 @@ class InformasiLembaga(db.Entity):
 
 
 class Banner(db.Entity):
-    _table_ = 'banner_aplikasi'
+    _table_ = "banner_aplikasi"
+
+    id = PrimaryKey(int, auto=True)
+
     nama = Required(str)
     tanggal = Required(datetime, default=datetime.now)
     gambar = Required(str)
@@ -102,7 +105,6 @@ class Banner(db.Entity):
             "tanggal": self.tanggal.strftime("%Y-%m-%d %H:%M:%S"),
             "gambar": self.gambar
         }
-
 
 class AspekPenilaian(db.Entity):
     _table_ = "aspek_penilaian"
