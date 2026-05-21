@@ -54,6 +54,11 @@ from models.schema import (
     Presensi,
     AspekPenilaian,
     JenisSemester,
+    Cuti,
+    Lembur,
+    KelolaKegiatan,
+    Indikator,
+    Surat,
     Peminjaman,
     Buku,
     Semester,
@@ -61,6 +66,7 @@ from models.schema import (
     Banner,
     Raport,
     JadwalMengajar,
+    Izin,
     BackupFile
 )
 
@@ -98,6 +104,12 @@ from resources.peminjamanbuku import DataPeminjamanResource, DetailPeminjamanRes
 from resources.informasilembaga import InformasiLembagaResource, DetailInformasiLembagaResource
 from resources.banneraplikasi import BannerAplikasiResource
 from resources.settingabsensi import SettingAbsensiResource
+from resources.kelolaindikator import SuratResource, IndikatorResource
+from resources.kelolakegiatan import KelolaKegiatanResource, DetailKelolaKegiatanResource
+from resources.cuti import CutiResource, DetailCutiResource
+from resources.lembur import LemburResource, DetailLemburResource
+from resources.izin import IzinResource, DetailIzinResource
+
 
 
 
@@ -124,8 +136,18 @@ databuku_api = DataBukuResource()
 settingabsensi_api = SettingAbsensiResource()
 informasilembaga_api = InformasiLembagaResource()
 informasilembaga_detail_api = DetailInformasiLembagaResource()
+izin_api = IzinResource()
+izin_detail_api = DetailIzinResource()
+lembur_api = LemburResource()
+lembur_detail_api = DetailLemburResource()
+cuti_api = CutiResource()
+cuti_detail_api = DetailCutiResource()
+kelolakegiatan_api = KelolaKegiatanResource()
+kelolakegiatan_detail_api = DetailKelolaKegiatanResource()
 databuku_detail_api = DetailBukuResource()
 peminjaman_api = DataPeminjamanResource()
+surat_api = SuratResource()
+indikator_api = IndikatorResource()
 backup_api = BackupDataResource()
 banner_api = BannerAplikasiResource()
 peminjaman_detail_api = DetailPeminjamanResource()
@@ -158,8 +180,28 @@ app.add_route('/settingabsensi', settingabsensi_api)
 app.add_route('/settingabsensi/{id:int}', settingabsensi_api)
 
 
+# Routing API Surat Menyurat
+app.add_route('/surat', surat_api)
+app.add_route('/surat/{id:int}', surat_api)
+
+# Routing API Kelola Indikator Kinerja
+app.add_route('/indikator', indikator_api)
+app.add_route('/indikator/{id:int}', indikator_api)
+
 app.add_route('/databuku', databuku_api)
 app.add_route('/databuku/{id:int}', databuku_detail_api)
+
+app.add_route('/izin', izin_api)
+app.add_route('/izin/{id:int}', izin_detail_api)
+
+app.add_route('/lembur', lembur_api)
+app.add_route('/lembur/{id:int}', lembur_detail_api)
+
+app.add_route('/cuti', cuti_api)
+app.add_route('/cuti/{id:int}', cuti_detail_api)
+
+app.add_route('/kelolakegiatan', kelolakegiatan_api)
+app.add_route('/kelolakegiatan/{id:int}', kelolakegiatan_detail_api)
 
 app.add_route('/informasilembaga', informasilembaga_api)
 app.add_route('/informasilembaga/{id:int}', informasilembaga_detail_api)
