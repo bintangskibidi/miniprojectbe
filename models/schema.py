@@ -89,6 +89,71 @@ class InformasiLembaga(db.Entity):
     tanggal = Optional(date)
 
 
+class Surat(db.Entity):
+    noSurat = Required(str)
+    judul = Required(str)
+    tanggal = Required(str) # Disimpan sebagai string sesuai input HTML5 date frontend "YYYY-MM-DD"
+    jenis = Required(str)   # Masuk / Keluar
+    deskripsi = Optional(str)
+
+class Indikator(db.Entity):
+    nama = Required(str)
+    tipe = Required(str)    # angka / teks
+    jenis = Required(str)   # Guru / Staff
+    bobot = Required(int)
+    urutan = Optional(int, default=1)
+    relasi = Optional(str, default="Absen Masuk")
+    status = Required(str, default="Aktif")
+
+
+class KelolaKegiatan(db.Entity):
+    _table_ = 'kelola_kegiatan'  # Nama tabel di database
+
+    nama = Required(str)  # Menampung string nama kegiatan
+    jenis = Required(str)  # Menampung string jenis kegiatan
+
+    # Menggunakan str atau Optional(str) agar format datetime-local ("YYYY-MM-DDTHH:MM")
+    # dari Frontend dapat langsung disimpan tanpa perlu parsing manual ke objek datetime.
+    mulai = Required(str)
+    selesai = Required(str)
+
+    lokasi = Required(str)  # Menampung string lokasi kegiatan
+    penanggungjawab = Required(str)  # Menampung string penanggung jawab (pj)
+
+    status = Optional(str, default="Aktif")
+
+
+class Cuti(db.Entity):
+    _table_ = 'cuti'
+    id = PrimaryKey(int, auto=True)
+    nama = Required(str)                               # Nama Pegawai (dari select option)
+    unit = Optional(str, default="0", nullable=True)   # Default "0" sesuai dengan FE payload
+    mulai = Required(date)                             # Tanggal Mulai Cuti (Tipe Datetime/Date)
+    selesai = Required(date)                           # Tanggal Selesai Cuti (Tipe Datetime/Date)
+    alasan = Required(str)                             # Alasan Cuti (dari textarea)
+    status = Required(str, default="Pending")          # Status: 'Pending', 'Approved', a
+
+
+class Lembur(db.Entity):
+    _table_ = 'lembur'
+    id = PrimaryKey(int, auto=True)
+    nama = Required(str)
+    unit = Optional(str, default="0")
+    mulai = Required(date)
+    selesai = Required(date)
+    alasan = Required(str)  # Bisa menggunakan str atau untuk teks panjang gunakan LongStr
+    status = Required(str, default="Pending")
+
+class Izin(db.Entity):
+    _table_ = 'izin'
+    id = PrimaryKey(int, auto=True)
+    nama = Required(str)
+    unit = Required(str, default="0")
+    mulai = Required(date)
+    selesai = Required(date)
+    alasan = Required(str)
+    status = Required(str, default="Pending")
+
 class Banner(db.Entity):
     _table_ = "banner_aplikasi"
 
