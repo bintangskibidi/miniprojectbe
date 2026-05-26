@@ -154,6 +154,60 @@ class Izin(db.Entity):
     alasan = Required(str)
     status = Required(str, default="Pending")
 
+
+class KomponenGaji(db.Entity):
+    _table_ = 'komponen_gaji'  # Menentukan nama tabel di database
+
+    id = PrimaryKey(int, auto=True)  # Menggunakan auto-increment jika FE tidak mengirim ID kustom
+    nama = Required(str)
+    jenis = Required(str)
+    perhitungan = Required(str)
+    nominal = Required(str)
+    keterangan = Optional(str)
+
+class RekapPresensi(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    tanggal = Required(str)
+    nip = Required(str)
+    nama = Required(str)
+    jenis_pegawai = Required(str)
+    unit = Optional(str, default="0")
+    jam_masuk = Optional(str)
+    status_masuk = Optional(str)
+    jam_pulang = Optional(str)
+    status_pulang = Optional(str)
+    keterangan = Required(str)
+    terlambat = Optional(str)
+    pulang_awal = Optional(str)
+class PeriodeTanggal(db.Entity):
+    _table_ = 'periode_tanggal'
+    id = PrimaryKey(int, auto=True) # atau menggunakan tipe int besar jika id dikirim manual dari FE
+    tanggal = Required(int, unique=True) # Menyimpan angka tanggal 1 - 31
+    status = Required(str, default='Aktif')
+
+class KriteriaKehadiran(db.Entity):
+    _table_ = "kriteria_kehadiran"
+    id = PrimaryKey(int, auto=True)
+    nama = Required(str)
+    kategori = Required(str)
+    potongan = Required(bool, default=False)
+    tunjangan = Required(bool, default=False)
+    range = Required(bool, default=False)
+
+
+# ==========================================
+# 2. ENTITAS SETTING GAJI KEHADIRAN
+# ==========================================
+class SettingGajiKehadiran(db.Entity):
+    _table_ = "setting_gaji_kehadiran"
+    id = PrimaryKey(int, auto=True)
+    kriteria = Required(str)
+    durasi = Required(str)
+    jenis = Required(str)
+    satuan = Required(str)
+    nominal = Required(str)
+    keterangan = Optional(str, default="")
+
 class Banner(db.Entity):
     _table_ = "banner_aplikasi"
 

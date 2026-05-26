@@ -61,12 +61,14 @@ from models.schema import (
     Surat,
     Peminjaman,
     Buku,
+    RekapPresensi,
     Semester,
     InformasiLembaga,
     Banner,
     Raport,
     JadwalMengajar,
     Izin,
+    PeriodeTanggal,
     BackupFile
 )
 
@@ -109,6 +111,14 @@ from resources.kelolakegiatan import KelolaKegiatanResource, DetailKelolaKegiata
 from resources.cuti import CutiResource, DetailCutiResource
 from resources.lembur import LemburResource, DetailLemburResource
 from resources.izin import IzinResource, DetailIzinResource
+from resources.manajementanggal import ManajemenTanggalResource, DetailTanggalResource
+from resources.settingkomponengaji import KomponenGajiResource, DetailKomponenGajiResource
+from resources.rekappresensi import AbsensiHarianResource, DetailAbsensiHarianResource
+from resources.kriteriakehadiran import KriteriaKehadiranResource, DetailKriteriaKehadiranResource
+from resources.kriteriakehadiran import SettingGajiKehadiranResource, DetailSettingGajiKehadiranResource
+
+
+
 
 
 
@@ -136,12 +146,22 @@ databuku_api = DataBukuResource()
 settingabsensi_api = SettingAbsensiResource()
 informasilembaga_api = InformasiLembagaResource()
 informasilembaga_detail_api = DetailInformasiLembagaResource()
+rekappresensi_api = AbsensiHarianResource()
+rekappresensi_detail_api = DetailAbsensiHarianResource()
 izin_api = IzinResource()
 izin_detail_api = DetailIzinResource()
 lembur_api = LemburResource()
 lembur_detail_api = DetailLemburResource()
+komponengaji_api = KomponenGajiResource()
+komponengaji_detail_api = DetailKomponenGajiResource()
+kriteriakehadiran_api = KriteriaKehadiranResource()
+kriteriakehadiran_detail_api = DetailKriteriaKehadiranResource()
+settinggaji_api = SettingGajiKehadiranResource()
+settinggaji_detail_api = DetailSettingGajiKehadiranResource()
 cuti_api = CutiResource()
 cuti_detail_api = DetailCutiResource()
+manajementanggal_api = ManajemenTanggalResource()
+manajementanggal_detail_api = DetailTanggalResource()
 kelolakegiatan_api = KelolaKegiatanResource()
 kelolakegiatan_detail_api = DetailKelolaKegiatanResource()
 databuku_detail_api = DetailBukuResource()
@@ -179,6 +199,19 @@ app.add_route('/kelas/{id:int}', kelas_api)
 app.add_route('/settingabsensi', settingabsensi_api)
 app.add_route('/settingabsensi/{id:int}', settingabsensi_api)
 
+app.add_route('/kriteria-kehadiran', KriteriaKehadiranResource())
+app.add_route('/kriteria-kehadiran/{id}', DetailKriteriaKehadiranResource())
+
+# Routing Setting Gaji Kehadiran (Termasuk fungsi 'Copy' di FE yang memanggil POST endpoint ini)
+app.add_route('/settinggaji', SettingGajiKehadiranResource())
+app.add_route('/settinggaji/{id}', DetailSettingGajiKehadiranResource())
+
+app.add_route('/komponengaji', komponengaji_api)
+app.add_route('/komponengaji/{id:int}', komponengaji_detail_api)
+
+app.add_route('/rekappresensi', rekappresensi_api)
+app.add_route('/rekappresensi/{id:int}', rekappresensi_detail_api)
+
 
 # Routing API Surat Menyurat
 app.add_route('/surat', surat_api)
@@ -202,6 +235,9 @@ app.add_route('/cuti/{id:int}', cuti_detail_api)
 
 app.add_route('/kelolakegiatan', kelolakegiatan_api)
 app.add_route('/kelolakegiatan/{id:int}', kelolakegiatan_detail_api)
+
+app.add_route('/manajementanggal', manajementanggal_api)
+app.add_route('/manajementanggal/{id:int}', manajementanggal_detail_api)
 
 app.add_route('/informasilembaga', informasilembaga_api)
 app.add_route('/informasilembaga/{id:int}', informasilembaga_detail_api)
