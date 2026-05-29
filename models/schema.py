@@ -194,6 +194,17 @@ class KriteriaKehadiran(db.Entity):
     tunjangan = Required(bool, default=False)
     range = Required(bool, default=False)
 
+class JenisPenerimaan(db.Entity):
+    _table_ = "jenis_penerimaan"
+    id = PrimaryKey(int, auto=True)
+    akun_harta = Required(str)          # Contoh: "1.0.1 - Kas"
+    jenis = Required(str)               # Contoh: "Dengan Pembatasan" / "Tanpa Pembatasan"
+    akun_pendapatan = Required(str)     # Contoh: "4.0.4 Pendapatan Bos"
+    keterangan = Optional(str, default='')
+    kode_akun_penerimaan = Required(str)# Contoh: "4.0.4" atau "3"
+    nama_akun_penerimaan = Required(str)# Contoh: "Pendapatan BOSDA"
+    status = Required(str)
+
 
 # ==========================================
 # 2. ENTITAS SETTING GAJI KEHADIRAN
@@ -208,6 +219,16 @@ class SettingGajiKehadiran(db.Entity):
     nominal = Required(str)
     keterangan = Optional(str, default="")
 
+
+class TransaksiPenerimaan(db.Entity):
+    _table_ = "transaksi_penerimaan"
+    id = PrimaryKey(int, auto=True)
+    jenis = Required(str)          # SPP, Donasi, BOS
+    nominal = Required(int)        # Pastikan Integer
+    sumber = Required(str)
+    menyetujui = Required(str)
+    tanggal = Required(date)       # Pastikan tipe Date
+    keterangan = Optional(str)
 class Banner(db.Entity):
     _table_ = "banner_aplikasi"
 
