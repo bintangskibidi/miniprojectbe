@@ -66,9 +66,11 @@ from models.schema import (
     InformasiLembaga,
     Banner,
     Raport,
+    JenisPenerimaan,
     JadwalMengajar,
     Izin,
     PeriodeTanggal,
+    TransaksiPenerimaan,
     BackupFile
 )
 
@@ -116,6 +118,9 @@ from resources.settingkomponengaji import KomponenGajiResource, DetailKomponenGa
 from resources.rekappresensi import AbsensiHarianResource, DetailAbsensiHarianResource
 from resources.kriteriakehadiran import KriteriaKehadiranResource, DetailKriteriaKehadiranResource
 from resources.kriteriakehadiran import SettingGajiKehadiranResource, DetailSettingGajiKehadiranResource
+from resources.transaksipenerimaan import TransaksiPenerimaanResource
+from resources.jenispenerimaan import JenisPenerimaanResource
+
 
 
 
@@ -143,7 +148,9 @@ kelas_api = KelasResource()
 jurusan_api = JurusanResource()
 tahun_ajaran_api = TahunAjaranResource()
 databuku_api = DataBukuResource()
+transaksipenerimaan_api = TransaksiPenerimaanResource()
 settingabsensi_api = SettingAbsensiResource()
+jenispenerimaan_api = JenisPenerimaanResource()
 informasilembaga_api = InformasiLembagaResource()
 informasilembaga_detail_api = DetailInformasiLembagaResource()
 rekappresensi_api = AbsensiHarianResource()
@@ -196,8 +203,14 @@ app.add_route('/siswa/{id:int}', DetailSiswaResource())
 app.add_route('/kelas', kelas_api)
 app.add_route('/kelas/{id:int}', kelas_api)
 
+app.add_route('/transaksipenerimaan', transaksipenerimaan_api)
+app.add_route('/transaksipenerimaan/{id:int}', transaksipenerimaan_api)
+
 app.add_route('/settingabsensi', settingabsensi_api)
 app.add_route('/settingabsensi/{id:int}', settingabsensi_api)
+
+app.add_route('/jenispenerimaan', jenispenerimaan_api)
+app.add_route('/jenispenerimaan/{id:int}', jenispenerimaan_api)
 
 app.add_route('/kriteria-kehadiran', KriteriaKehadiranResource())
 app.add_route('/kriteria-kehadiran/{id}', DetailKriteriaKehadiranResource())
